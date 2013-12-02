@@ -1,163 +1,84 @@
-
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta name="author" content="Nicolas Garcia Belmonte" />
-    <meta name="copyright" content="copyright 2008-2010, Nicolas Garcia Belmonte" />
-    <meta name="description" content="JavaScript InfoVis Toolkit, Meaningful Visualizations" />
-    <meta name="keywords" content="jit, javascript, information visualization, infovis, information, visualization" />
-    <meta name="robots" content="all" />
+<html>
 
-    <title>
-     JavaScript InfoVis Toolkit
-    </title>
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="PhyloJIVE : Integrating online biodiversity data with the Tree of Life" />
 
-    <!-- CSS -->
-    <link href="static/v20/css/base.css" rel="stylesheet" type="text/css" media="screen" />
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
-<link href="static/v20/css/home.css" rel="stylesheet" type="text/css" media="screen" />
+    <title>PhyloJIVE</title>
+  </head>
 
-    <!--[if IE]>
-    <link href="static/v20/css/featureless.css" rel="stylesheet" type="text/css" media="screen" />
-    <![endif]-->
+  <body>
 
-    <!-- Scripts -->
-    <script type="text/javascript" src="static/v20/js/mootools-1.2.4-core-yc.js"></script>
-    <script type="text/javascript" src="static/v20/js/mootools-1.2.4.4-more.js"></script>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/TRIN/jit">View on GitHub</a>
 
-<script type="text/javascript" src="static/v20/js/mootools.marquee-yc.js"></script>
-<script type="text/javascript" src="static/v20/js/home.js"></script>
+          <h1 id="project_title">PhyloJIVE</h1>
+          <h2 id="project_tagline">Integrating online biodiversity data with the Tree of Life</h2>
 
-</head>
-<body>
-<div id="container">
-
-<div id="header">
-  <div class="container">
-    <a href="index.html">
-      <h1>JavaScript InfoVis Toolkit</h1>
-      <h4>Create Interactive Data Visualizations for the Web</h4>
-    </a>
-
-
-  </div>
-</div>
-        <div id="nav">
-      <div class="container">
-        <ul>
-          <li>
-          <div class="item first"></div>
-            <a href="demos.html">
-              <span class="title">Demos</span>
-              <span class="subtitle">Explore the Visualizations</span>
-            </a>
-          </li>
-          <li>
-          <div class="item"></div>
-            <a href="docs.html">
-              <span class="title">Learn</span>
-              <span class="subtitle">Browse the Doc</span>
-            </a>
-          </li>
-          <li>
-          <div class="item"></div>
-            <a target="_blank" href="http://groups.google.com/group/javascript-information-visualization-toolkit">
-              <span class="title">Discuss</span>
-              <span class="subtitle">Join the Google Group</span>
-            </a>
-          </li>
-          <li>
-          <div class="item"></div>
-            <a target="_blank" href="http://github.com/philogb/jit">
-              <span class="title">Contribute</span>
-              <span class="subtitle">Get Involved</span>
-            </a>
-          </li>
-          <li>
-          <div class="item"></div>
-            <a target="_blank" href="http://philogb.github.com/blog">
-              <span class="title">Blog</span>
-              <span class="subtitle">News and Stuff</span>
-            </a>
-          </li>
-          <li>
-          <div class="item"></div>
-            <a href="http://philogb.github.com/">
-              <span class="title">About</span>
-              <span class="subtitle">Bio and Contact</span>
-            </a>
-          </li>
-        </ul>
-      </div>
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/TRIN/jit/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/TRIN/jit/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
     </div>
 
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h3>
+<a name="about" class="anchor" href="#about"><span class="octicon octicon-link"></span></a>About</h3>
 
+<p>phyloJIVE provides Interactive Visualizations for phylogenies. Species and other taxa  can be linked by name or GUID to biodiversity data sources.</p>
 
-      <div id="wrapper">
-        <div class="container">
-          <div id="image-switcher">
-              <div style="position:relative;">
-                  <a href="demos/" title="Try the demos">
-                  <img src="static/v20/img/marquee/sunburst.png" id="first-image" alt="image" />
-                  </a>
-                  <div class="tag">
-                      Sunburst Visualization
-                  </div>
-              </div>
-          </div>
-          <div id="main-text-container">
-            The JavaScript InfoVis Toolkit provides tools for creating Interactive Data Visualizations for the Web.
-          </div>
-          <div id="download">
-              <a title="Source and Compressed libraries, Examples, Extras" class="button blue" href="downloads/Jit-2.0.1.zip">Download</a>
-              <div class="description">
-                  Current Release: <b>2.0.1</b>
-              </div>
-          </div>
-          <a class="custom-build" href="builder.html">Click here for a custom build.</a>
-	        <div id="donation">
-	        <div class="donation-text">Donations keep this project going!</div>
-	        <form style="margin-top:5px;" action="https://www.paypal.com/cgi-bin/webscr" method="post">
-	        <div>
-	        <input type="hidden" name="cmd" value="_s-xclick" />
-	        <input type="hidden" name="hosted_button_id" value="5763237" />
-	        <input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" style="border:none;" name="submit" alt="PayPal - The safer, easier way to pay online!" />
-	        <img alt="" style="border:none;" src="https://www.paypal.com/fr_FR/i/scr/pixel.gif" width="1" height="1" />
-	        </div>
-	        </form>
-	        </div>
+<p>PhyloJIVE operates as a client-side web application that renders phyloge-nies on a HTML5 canvas. Written in JavaScript, it requires no plug-ins. Performance is determined by the viewer’s computer.</p>
 
-        </div>
-      </div>
+<h3>
+<a name="components" class="anchor" href="#components"><span class="octicon octicon-link"></span></a>Components</h3>
 
+<p>PhyloJIVE has three components: 
+1. PhylogenyExplorer 
+1. PhyloJIVE* 
+1. charJSON  </p>
 
-        <div id="footer">
-        <div class="container">
-          <p>copyright &copy; 2011 <a href="http://sencha.com/company/">SenchaLabs</a> - Author: <a href="http://philogb.github.com/">Nicolas Garcia Belmonte</a></p>
-        </div>
+<p><em>PhylogenyExplorer</em> is an extension to the JIT, Javascript Infovis Toolkit , library that adds a novel, compact tree visualization with variable length branches. Actions and online data sources can be linked to every node. </p>
+
+<p><em>PhyloJIVE*</em> is a set of web application templates that wrap around a PhylogenyExplorer visualization. It provides the means to navigate the tree and its component clades; to adjust the visualization and other parameters; to select taxon character states; to upload of trees in newick form and char-acter sets in CSV or charJSON form; to fetch character sets from Identify Life; and to display the results of web service queries (e.g. species pages, maps, images) on the tree. Clades with up to 32 taxa can be selected and sent to a web service. Sets of up to ten quantitative or qualitative characters can be mapped onto the tree. Character states are reconstructed using sim-ple algorithms (see supplemental information); a summary of which ap-pears in the application when the mouse pointer hovers over a node. </p>
+
+<p><em>charJSON</em> is a JSON data structure for representing qualitative and quan-titative traits/characters and can be parsed by most programming languages. Supplementary Table 1 shows a formal description of charJSON in Ex-tended Backus-Naur Form.</p>
+
+<h3>
+<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h3>
+
+<ul>
+<li> <a href="https://rawgithub.com/TRIN/jit/phylojive-test/examples/PhyloJive/hornworts.html">https://rawgithub.com/TRIN/jit/phylojive-test/examples/PhyloJive/hornworts.html</a> </li>
+</ul><h3>
+<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+
+<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.
+ It is a branch  of The JavaScript InfoVis Toolkit <a href="http://thejit.org">http://thejit.org</a>.</p>
+
+<h3>
+<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+
+<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+      </section>
     </div>
 
-</div>
-<form style="display:none;" id="myform" action="https://www.paypal.com/cgi-bin/webscr" method="post">
-<div>
-<input type="hidden" name="cmd" value="_s-xclick" />
-<input type="hidden" name="hosted_button_id" value="5763237" />
-<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" style="border:none;" name="submit" alt="PayPal - The safer, easier way to pay online!" />
-<img alt="" style="border:none;" src="https://www.paypal.com/fr_FR/i/scr/pixel.gif" width="1" height="1" />
-</div>
-</form>
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">PhyloJIVE maintained by <a href="https://github.com/TRIN">TRIN</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
 
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-1601691-6");
-pageTracker._trackPageview();
-} catch(err) {}</script>
-</body>
+    
+
+  </body>
 </html>
-
