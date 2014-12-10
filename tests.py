@@ -893,7 +893,7 @@ tests_model = {
             Click the top button to get the PhylogenyExplorer nav aid; try choosing 2nd &amp; 3rd
             characters to plot on the tree; align-names feature; search; set-root; rotate, etc.
             """,
-            'Extras': ['PhyloJive/PhylogenyExplorer.js', 'excanvas.js' ]
+            'Extras': ['excanvas.js','PhyloJive/PhylogenyExplorer.js' ]
         },
         {
             'Title': 'PhyloJive qunit tests',
