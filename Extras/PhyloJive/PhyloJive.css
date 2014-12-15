@@ -180,7 +180,6 @@ canvas{
 #center-jitcontainer {
     float:left;
     color:#ccc;
-    width: 65%;
     font-size: 14px;
     border: 2px solid #464646;
 }
@@ -203,12 +202,9 @@ canvas{
     /*position: relative;*/
 }
 
-#infovis {
+.infovis {
     position:relative;
-    margin:auto;
     overflow:hidden;
-    width: auto;
-    height: auto;
 }
 #popup {
   background-color:#E0E2E7;

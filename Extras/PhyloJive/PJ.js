@@ -1,120 +1,7 @@
 var isLateralise = function () {
     return true;
 }
-
-function remoteLoadCharacters(url, characters, dataset) {
-    //console.log("remoteLoadCharacters", url, characters, dataset);
-    jQuery("#loadingMsg").show();
-    jQuery("#loadChars").attr("disabled","disabled");
-
-    var nodes = [];
-    var root = st.graph.getNode(st.root);
-    var allChars = jQuery.extend(true, {}, characters) || {}; // copy not reference it
-    // iterate over tree and extract names
-    root.eachSubgraph(function (node) {
-        if (node.name) {
-            var sciName = node.name.replace(/\s+\d+/,""); // strip off year strings
-            nodes.push(sciName);
-            // create stub for all names with no existing props
-            if (!allChars[node.name]) {
-                allChars[node.name] = {};
-            }
-        }
-    });
-    var joinedNames = nodes.join(";").replace(/\s+/g, "+");
-    //url += "?names=" + joinedNames + "&dataset=" + dataset;
-    var data = {
-        names: joinedNames,
-        dataset: dataset
-    }
-    //jQuery.getJSON(url, function(data) {
-    jQuery.post(url, data, function(data) {
-        var propObj = {}, maxProps = 0, oldChars = {}, charsFound;
-        jQuery.each(data, function(key, el) {
-            // need to initialize it here. otherwise it remembers value from previous iteration.
-            charsFound = false;
-            //oldChars[key] = jQuery.extend(true, {}, allChars[key] ); //copy it
-            //console.log("key:", key, el, oldChars[key], allChars[key]);
-            jQuery.extend(allChars[key], el); // merge props
-            if (el) charsFound = true;
-            // (do once) build a list of all (merged) properties
-            if (charsFound && objLength(propObj) <= 0 && allChars[key]) {
-                maxProps = objLength(allChars[key]);
-                jQuery.each(el, function(k, v) {
-                    //propList.push(k);
-                    propObj[k] = [];
-                });
-
-            }
-        });
-        // normalise the properties for all taxa
-        jQuery.each(allChars, function(key, el) {
-            //console.log("newChars check",key,el,objLength(el),maxProps);
-            //console.log("char's length", el.length, maxProps);
-            if (objLength(el) < maxProps) {
-                //console.log("mismatch", key);
-                jQuery.extend(true, el, propObj);
-            }
-        });
-        // determine the first character for first taxa
-//        var firstChar;
-//        var getFirstKey = function (data) {
-//            for (var prop in data)
-//                return prop;
-//        }
-//
-//        for (var key in allChars) {
-//            if (allChars[key]) {
-//                firstChar = getFirstKey(allChars[key]);
-//                break;
-//            }
-//        }
-//
-//        // load chars into PJ
-//        st.firstCharacter = firstChar || false; //firstChar;
-        st.config.initCharacter = false;
-        st.character = allChars || {}; // st.characterList ???
-        //console.log("st 2", st);
-        if (charsFound && st.character) {
-            var html = st.colorCharacter() || '';
-            jQuery('#legendBody').html(html);
-            //legendElem.style.display = 'inline';
-            jQuery('#legend').show();
-            //st.findAllCharTypes(st.graph.getNode(st.root));
-            updateCharacter(st.characterList);
-            //console.log("triggering navigate:", window.location.hash.slice(1));
-            var hashString = window.location.hash.slice(1);
-            // we need the URL to change in order to get navigate to trigger -> toggle first hash value
-            var fiddleHash1 = (hashString.indexOf("characters") > -1) ? "character" : "characters";
-            var fiddleHash2 = (hashString.indexOf("characters") > -1) ? "characters" : "character";
-            window.AppRouter.navigate(hashString.replace(fiddleHash2, fiddleHash1),{trigger: true, replace: true});
-            st.fitScreen();
-            alert("characters were loaded successfully");
-            // add IL to attribution tab
-            var attr = "<p>Additional character data provided by <a href=\"http://www.identifylife.org/\" target=\"_blank\">Identify Life</a>.</p>";
-            jQuery("#tabAbout").append(attr);
-        } else {
-            alert("No characters were found for this tree");
-            jQuery('#legend').hide();
-        }
-    }, "json").error(function(jqXHR, textStatus, errorThrown){
-        alert("getJSON Error: " + jqXHR.responseText.substring(0, Math.min(500,jqXHR.responseText.length)));
-    }).complete(function() {
-        jQuery("#loadingMsg").hide();
-        jQuery("#loadChars").removeAttr("disabled");
-    });
-}
-
-function updateMapColours(el) {
-    //alert("foo: " + jQuery(el).val());
-    var character = jQuery(el).val();
-    var node = jQuery(el).data("node");
-    var name = jQuery(el).data("name");
-    var opt = jQuery(el).data("opt");
-    //console.log("loadMap args", node, name, opt, character );
-    loadMap(node, name, opt, character);
-}
-
+var st;
 /**
  * Convert color name to hex code. Borrowed from http://stackoverflow.com/a/1573141/249327
  *
@@ -363,19 +250,16 @@ var PJ = function (params) {
                     name = "<i>" + node.name + "</i>";
                 }
                 else {
-                    name = " unnamed clade ";
+                    name = " unnamed";
                 }
                 //name = name + "<strong> click</strong> for ";
                 if (node.data.leaf) { // end taxon
                     //    name = name + "for linked data";
                 } else { //clade
-                    //clade
-                    name = "Part of " + name;
-                    if (node.length < 30) {
-                        name = name + "clade members";
-                    }
-                    else {
-                        name = name + "30 clade members";
+                    if( name ){
+                        name = "Inner Node:" +name;
+                    }else{
+                        name = "Inner Node: not named"
                     }
                 }
                 name = "<h3>" + name + "</h3>";
@@ -498,7 +382,6 @@ var PJ = function (params) {
                         + firstColor + '">' + node.name + '</div>';
                 }
             }
-
         },
 
         //This method is called right before plotting
@@ -590,6 +473,8 @@ var PJ = function (params) {
             }
         }
     }, params);
+    config.injectInto = config.id;
+    delete config.id;
     //end config
 
     var nextStep = function (pos, step, length) {
@@ -651,6 +536,165 @@ var PJ = function (params) {
         }
     };
 
+    var navigation = function (opt) {
+        function $E(tag, props) {
+            var elem = document.createElement(tag);
+            for (var p in props) {
+                if (typeof props[p] == "object") {
+                    $jit.util.extend(elem[p], props[p]);
+                } else {
+                    elem[p] = props[p];
+                }
+            }
+            return elem;
+        }
+        opt.codeBase = opt.codeBase || '';
+//        var popupHTML = '<div id="popup-close" style="position:relative; width:100%; background-color:lightblue"><a href="#" onclick="this.parentNode.parentNode.style.display=\'none\';" onmouseover="this.style.cursor=\'pointer\';" class="ui-dialog-titlebar-close ui-corner-all" role="button"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="popup-text"></div>';
+        var navHTML = '<div style="position:relative"><div id="panup" style="position: absolute; left: 13px; top: 4px; width: 18px; height: 18px; cursor: pointer;"><img id="north" src="' + opt.codeBase + '/Extras/PhyloJive/north-mini.png" /></div><div id="panleft" style="position: absolute; left: 4px; top: 22px; width: 18px; height: 18px; cursor: pointer;"><img id="west" src="' + opt.codeBase + '/Extras/PhyloJive/west-mini.png" /></div><div id="panright" style="position: absolute; left: 22px; top: 22px; width: 18px; height: 18px; cursor: pointer;"><img id="east" src="' + opt.codeBase + '/Extras/PhyloJive/east-mini.png" /></div><div id="pandown" style="position: absolute; left: 13px; top: 40px; width: 18px; height: 18px; cursor: pointer;"><img id="south" src="' + opt.codeBase + '/Extras/PhyloJive/south-mini.png" /></div><div id="zoomout" style="position: absolute; left: 13px; top: 99px; width: 18px; height: 18px; cursor: pointer;"><img id="zoomOUT" src="' + opt.codeBase + '/Extras/PhyloJive/zoom-minus-mini.png" /></div><div id="zoomworld" style="position: absolute; left: 13px; top: 81px; width: 18px; height: 18px; cursor: pointer;"><img id="world" style="position: relative; width: 18px; height: 18px;" src="' + opt.codeBase + '/Extras/PhyloJive/zoom-world-mini.png"></div><div id="zoomin" style="position: absolute; left: 13px; top: 63px; width: 18px; height: 18px; cursor: pointer;"><img id="zoomIN" src="'
+            + opt.codeBase
+            + '/Extras/PhyloJive/zoom-plus-mini.png" /></div><div style="position:absolute;left:-50px;top:123px;width:130px"> Status: <span id="log"></span></div></div>';
+
+        var jitcontainer, rightJitContainer, centerJitContainer,
+            id = typeof (opt.injectInto) == 'string' ? opt.injectInto : opt.injectInto.id,
+            infovis, parent, popup, navigation, menu, border;
+
+        //  this function is losing its meaning by adding this. just for now.
+        //     var popupContainer = document.getElementById('center-jitcontainer');
+        //     var popup = $jit.id('popup');
+        //     popup.style.display = 'none';
+        border = opt.width * 100 / 90;
+        jitcontainer = $E('div', {
+            'id': 'jitcontainer',
+            'className': 'clearfix',
+            'style': {
+                'position': 'relative',
+//                'width': border + 'px',
+//                'height': ((opt.height + 55 + border / 20)) + 'px'
+            }
+        });
+
+        rightJitContainer = $E('div', {
+            'id': 'right-jitcontainer',
+            'className': '',
+            'style': {
+                display: 'none'
+            }
+        });
+        centerJitContainer = $E('div', {
+            'id': 'center-jitcontainer',
+            'className': ''
+        });
+        infovis = jQuery('#' + id)[0];
+
+        parent = infovis.parentNode;
+        parent.replaceChild(jitcontainer, infovis);
+
+        centerJitContainer.appendChild(infovis);
+        jitcontainer.appendChild(centerJitContainer);
+        jitcontainer.appendChild(rightJitContainer);
+
+        popup = $E('div', {
+            'id': 'popup',
+            'className': '',
+            'style': {
+                'color': 'black',
+                'display': 'none',
+                'border': '1px solid green',
+                'background-color': '#B5D397',
+                'position': 'absolute',
+                'left': '50px',
+                'top': '90px',
+                //'width': '250px',
+                //'height': '170px',
+                'overflow': 'auto',
+                'text-align': 'left'
+            }
+        });
+//        jQuery(popup).html(popupHTML);
+        centerJitContainer.appendChild(popup);
+        jQuery(popup).resizable({
+            maxHeight: 450,
+            maxWidth: 350,
+            minHeight: 250,
+            minWidth: 170
+        });
+        jQuery(popup).draggable({
+            handle: '#popup-close',
+            containment: '#' + opt.injectInto
+        });
+
+        navigation = $E('div', {
+            'id': 'navigationPanel',
+            'style': {
+                'left': (opt.width - 50) + 'px',
+                'z-index':1
+            }
+        });
+
+        jQuery(navigation).html(navHTML);
+        jQuery(infovis).prepend(navigation);
+
+        // setup handlers for navigation icons
+        var north = $jit.id('north'),
+            east = $jit.id('east'),
+            west = $jit.id('west'),
+            south = $jit.id('south');
+
+        function clickHandler() {
+            var pos = {};
+            switch (this.id) {
+                case 'north':
+                    pos = {
+                        x: 0,
+                        y: 10
+                    };
+                    break;
+                case 'west':
+                    pos = {
+                        x: -10,
+                        y: 0
+                    };
+                    break;
+                case 'east':
+                    pos = {
+                        x: 10,
+                        y: 0
+                    };
+                    break;
+                case 'south':
+                    pos = {
+                        x: 0,
+                        y: -10
+                    };
+                    break;
+            }
+            var canvas = st.canvas;
+            canvas.translate(pos.x, pos.y);
+        }
+        north.onmousedown = south.onmousedown = east.onmousedown = west.onmousedown = clickHandler;
+
+        function zoomHandler() {
+            var scroll;
+            switch (this.id) {
+                case 'zoomIN':
+                    scroll = +1;
+                    break;
+                case 'zoomOUT':
+                    scroll = -1;
+                    break;
+            }
+            st.zoom(scroll);
+        }
+
+        var zoomIN = $jit.id('zoomIN'),
+            zoomOUT = $jit.id('zoomOUT'),
+            world = $jit.id('world');
+        zoomIN.onclick = zoomOUT.onclick = zoomHandler;
+        world.onclick = function () {
+            st.fitScreen();
+        };
+    };
+
     /**
      * gets tree data from url
      * @param url
@@ -659,12 +703,19 @@ var PJ = function (params) {
      */
     var getTree = function (url, callback, options) {
         var that = this
-        console.log( 'in get tree' + this )
+        var method = options.method || 'GET'
+        console.log( options )
+
         $.ajax({
             url: url,
-            type: 'GET',
+            dataType: options.dataType,
             success: function (data) {
-                options.tree = data;
+                if( typeof data == 'object'){
+                    options.format = data.format || options.format;
+                    options.tree = data.tree;
+                } else {
+                    options.tree = data;
+                }
                 callback.apply(that, [options])
             }
         })
@@ -682,6 +733,7 @@ var PJ = function (params) {
         switch (obj.format) {
             case 'newick':
                 if (obj.tree) {
+                    obj.tree = obj.tree.replace(/ /g,'_').replace(/'/g,"").replace(/\[pre-ingroup-marker\]/g,'')
                     dataObject = new Smits.PhyloCanvas.NewickParse(obj.tree);
                 } else if (obj.url) {
                     getTree(obj.url, setTree, obj)
@@ -708,9 +760,14 @@ var PJ = function (params) {
             console.log('successfully completed')
         }
     }
+
+    // add this class to make the labels disappear outside the bounds of canvas
+    $('#'+config.injectInto).addClass('infovis');
+
     console.log('before jit initialized' )
     console.log(config)
-    var st = new $jit.Phylo(config);
+    st = new $jit.Phylo(config);
+    navigation(config)
     setTree(config)
     console.log('after jit initialized')
 
@@ -728,17 +785,18 @@ var PJ = function (params) {
             for( var nodeName in obj){
                 value = obj[nodeName];
                 if (typeof value != 'object'){
-                    obj[nodeName]={'highlight':[value]}
+                    obj[nodeName]={'highlight':[1]}
                 }
             }
             st.character = obj;
-//            console.log(obj)
+            console.log(obj)
             st.firstCharacter = 'highlight';
             st.colorCharacter();
-//            console.log(st.characterList)
+            console.log(st.characterList)
             st.plot();
         },
         clearHighlight:function(){
+            console.log('in clear hightlight')
             var nodeName, value;
             var obj = st.character;
             for( var nodeName in obj){
@@ -747,7 +805,7 @@ var PJ = function (params) {
 
             st.character = obj;
             console.log(st.character)
-            st.firstCharacter ='highlight'
+            st.firstCharacter ='hightlight'
             st.colorCharacter()
             st.plot();
         },
