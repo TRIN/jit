@@ -9,30 +9,30 @@ var st;
  * @return {*}
  */
 function colourNameToHex(colour) {
-    var colours = {"aliceblue":"#f0f8ff","antiquewhite":"#faebd7","aqua":"#00ffff","aquamarine":"#7fffd4","azure":"#f0ffff",
-        "beige":"#f5f5dc","bisque":"#ffe4c4","black":"#000000","blanchedalmond":"#ffebcd","blue":"#0000ff","blueviolet":"#8a2be2","brown":"#a52a2a","burlywood":"#deb887",
-        "cadetblue":"#5f9ea0","chartreuse":"#7fff00","chocolate":"#d2691e","coral":"#ff7f50","cornflowerblue":"#6495ed","cornsilk":"#fff8dc","crimson":"#dc143c","cyan":"#00ffff",
-        "darkblue":"#00008b","darkcyan":"#008b8b","darkgoldenrod":"#b8860b","darkgray":"#a9a9a9","darkgreen":"#006400","darkkhaki":"#bdb76b","darkmagenta":"#8b008b","darkolivegreen":"#556b2f",
-        "darkorange":"#ff8c00","darkorchid":"#9932cc","darkred":"#8b0000","darksalmon":"#e9967a","darkseagreen":"#8fbc8f","darkslateblue":"#483d8b","darkslategray":"#2f4f4f","darkturquoise":"#00ced1",
-        "darkviolet":"#9400d3","deeppink":"#ff1493","deepskyblue":"#00bfff","dimgray":"#696969","dodgerblue":"#1e90ff",
-        "firebrick":"#b22222","floralwhite":"#fffaf0","forestgreen":"#228b22","fuchsia":"#ff00ff",
-        "gainsboro":"#dcdcdc","ghostwhite":"#f8f8ff","gold":"#ffd700","goldenrod":"#daa520","gray":"#808080","green":"#008000","greenyellow":"#adff2f",
-        "honeydew":"#f0fff0","hotpink":"#ff69b4",
-        "indianred ":"#cd5c5c","indigo ":"#4b0082","ivory":"#fffff0","khaki":"#f0e68c",
-        "lavender":"#e6e6fa","lavenderblush":"#fff0f5","lawngreen":"#7cfc00","lemonchiffon":"#fffacd","lightblue":"#add8e6","lightcoral":"#f08080","lightcyan":"#e0ffff","lightgoldenrodyellow":"#fafad2",
-        "lightgrey":"#d3d3d3","lightgreen":"#90ee90","lightpink":"#ffb6c1","lightsalmon":"#ffa07a","lightseagreen":"#20b2aa","lightskyblue":"#87cefa","lightslategray":"#778899","lightsteelblue":"#b0c4de",
-        "lightyellow":"#ffffe0","lime":"#00ff00","limegreen":"#32cd32","linen":"#faf0e6",
-        "magenta":"#ff00ff","maroon":"#800000","mediumaquamarine":"#66cdaa","mediumblue":"#0000cd","mediumorchid":"#ba55d3","mediumpurple":"#9370d8","mediumseagreen":"#3cb371","mediumslateblue":"#7b68ee",
-        "mediumspringgreen":"#00fa9a","mediumturquoise":"#48d1cc","mediumvioletred":"#c71585","midnightblue":"#191970","mintcream":"#f5fffa","mistyrose":"#ffe4e1","moccasin":"#ffe4b5",
-        "navajowhite":"#ffdead","navy":"#000080",
-        "oldlace":"#fdf5e6","olive":"#808000","olivedrab":"#6b8e23","orange":"#ffa500","orangered":"#ff4500","orchid":"#da70d6",
-        "palegoldenrod":"#eee8aa","palegreen":"#98fb98","paleturquoise":"#afeeee","palevioletred":"#d87093","papayawhip":"#ffefd5","peachpuff":"#ffdab9","peru":"#cd853f","pink":"#ffc0cb","plum":"#dda0dd","powderblue":"#b0e0e6","purple":"#800080",
-        "red":"#ff0000","rosybrown":"#bc8f8f","royalblue":"#4169e1",
-        "saddlebrown":"#8b4513","salmon":"#fa8072","sandybrown":"#f4a460","seagreen":"#2e8b57","seashell":"#fff5ee","sienna":"#a0522d","silver":"#c0c0c0","skyblue":"#87ceeb","slateblue":"#6a5acd","slategray":"#708090","snow":"#fffafa","springgreen":"#00ff7f","steelblue":"#4682b4",
-        "tan":"#d2b48c","teal":"#008080","thistle":"#d8bfd8","tomato":"#ff6347","turquoise":"#40e0d0",
-        "violet":"#ee82ee",
-        "wheat":"#f5deb3","white":"#ffffff","whitesmoke":"#f5f5f5",
-        "yellow":"#ffff00","yellowgreen":"#9acd32"};
+    var colours = {"aliceblue": "#f0f8ff", "antiquewhite": "#faebd7", "aqua": "#00ffff", "aquamarine": "#7fffd4", "azure": "#f0ffff",
+        "beige": "#f5f5dc", "bisque": "#ffe4c4", "black": "#000000", "blanchedalmond": "#ffebcd", "blue": "#0000ff", "blueviolet": "#8a2be2", "brown": "#a52a2a", "burlywood": "#deb887",
+        "cadetblue": "#5f9ea0", "chartreuse": "#7fff00", "chocolate": "#d2691e", "coral": "#ff7f50", "cornflowerblue": "#6495ed", "cornsilk": "#fff8dc", "crimson": "#dc143c", "cyan": "#00ffff",
+        "darkblue": "#00008b", "darkcyan": "#008b8b", "darkgoldenrod": "#b8860b", "darkgray": "#a9a9a9", "darkgreen": "#006400", "darkkhaki": "#bdb76b", "darkmagenta": "#8b008b", "darkolivegreen": "#556b2f",
+        "darkorange": "#ff8c00", "darkorchid": "#9932cc", "darkred": "#8b0000", "darksalmon": "#e9967a", "darkseagreen": "#8fbc8f", "darkslateblue": "#483d8b", "darkslategray": "#2f4f4f", "darkturquoise": "#00ced1",
+        "darkviolet": "#9400d3", "deeppink": "#ff1493", "deepskyblue": "#00bfff", "dimgray": "#696969", "dodgerblue": "#1e90ff",
+        "firebrick": "#b22222", "floralwhite": "#fffaf0", "forestgreen": "#228b22", "fuchsia": "#ff00ff",
+        "gainsboro": "#dcdcdc", "ghostwhite": "#f8f8ff", "gold": "#ffd700", "goldenrod": "#daa520", "gray": "#808080", "green": "#008000", "greenyellow": "#adff2f",
+        "honeydew": "#f0fff0", "hotpink": "#ff69b4",
+        "indianred ": "#cd5c5c", "indigo ": "#4b0082", "ivory": "#fffff0", "khaki": "#f0e68c",
+        "lavender": "#e6e6fa", "lavenderblush": "#fff0f5", "lawngreen": "#7cfc00", "lemonchiffon": "#fffacd", "lightblue": "#add8e6", "lightcoral": "#f08080", "lightcyan": "#e0ffff", "lightgoldenrodyellow": "#fafad2",
+        "lightgrey": "#d3d3d3", "lightgreen": "#90ee90", "lightpink": "#ffb6c1", "lightsalmon": "#ffa07a", "lightseagreen": "#20b2aa", "lightskyblue": "#87cefa", "lightslategray": "#778899", "lightsteelblue": "#b0c4de",
+        "lightyellow": "#ffffe0", "lime": "#00ff00", "limegreen": "#32cd32", "linen": "#faf0e6",
+        "magenta": "#ff00ff", "maroon": "#800000", "mediumaquamarine": "#66cdaa", "mediumblue": "#0000cd", "mediumorchid": "#ba55d3", "mediumpurple": "#9370d8", "mediumseagreen": "#3cb371", "mediumslateblue": "#7b68ee",
+        "mediumspringgreen": "#00fa9a", "mediumturquoise": "#48d1cc", "mediumvioletred": "#c71585", "midnightblue": "#191970", "mintcream": "#f5fffa", "mistyrose": "#ffe4e1", "moccasin": "#ffe4b5",
+        "navajowhite": "#ffdead", "navy": "#000080",
+        "oldlace": "#fdf5e6", "olive": "#808000", "olivedrab": "#6b8e23", "orange": "#ffa500", "orangered": "#ff4500", "orchid": "#da70d6",
+        "palegoldenrod": "#eee8aa", "palegreen": "#98fb98", "paleturquoise": "#afeeee", "palevioletred": "#d87093", "papayawhip": "#ffefd5", "peachpuff": "#ffdab9", "peru": "#cd853f", "pink": "#ffc0cb", "plum": "#dda0dd", "powderblue": "#b0e0e6", "purple": "#800080",
+        "red": "#ff0000", "rosybrown": "#bc8f8f", "royalblue": "#4169e1",
+        "saddlebrown": "#8b4513", "salmon": "#fa8072", "sandybrown": "#f4a460", "seagreen": "#2e8b57", "seashell": "#fff5ee", "sienna": "#a0522d", "silver": "#c0c0c0", "skyblue": "#87ceeb", "slateblue": "#6a5acd", "slategray": "#708090", "snow": "#fffafa", "springgreen": "#00ff7f", "steelblue": "#4682b4",
+        "tan": "#d2b48c", "teal": "#008080", "thistle": "#d8bfd8", "tomato": "#ff6347", "turquoise": "#40e0d0",
+        "violet": "#ee82ee",
+        "wheat": "#f5deb3", "white": "#ffffff", "whitesmoke": "#f5f5f5",
+        "yellow": "#ffff00", "yellowgreen": "#9acd32"};
 
     if (typeof colours[colour.toLowerCase()] != 'undefined')
         return colours[colour.toLowerCase()];
@@ -44,8 +44,8 @@ function colourNameToHex(colour) {
  * Get a colour value (hex) by its index value in an array (32 elements)
  */
 var colourScheme = {
-    colours: ["3366CC","DC3912","FF9900","109618","990099","0099C6","DD4477","66AA00","B82E2E","316395","994499","22AA99","AAAA11","6633CC","E67200","8B0707","651067","329262","5574A6","3B3EAC","B77322","16D620","B91383","F43595","9C5935","A9C413","2A778D","668D1C","BEA413","0C5922","743411", "000000"],
-    getColourForIndex: function(index) {
+    colours: ["3366CC", "DC3912", "FF9900", "109618", "990099", "0099C6", "DD4477", "66AA00", "B82E2E", "316395", "994499", "22AA99", "AAAA11", "6633CC", "E67200", "8B0707", "651067", "329262", "5574A6", "3B3EAC", "B77322", "16D620", "B91383", "F43595", "9C5935", "A9C413", "2A778D", "668D1C", "BEA413", "0C5922", "743411", "000000"],
+    getColourForIndex: function (index) {
         var hexCode = "";
 
         if (this.isInteger(index) && index < this.colours.length) {
@@ -67,7 +67,18 @@ var colourScheme = {
 
 var PJ = function (params) {
     console.log('in pj');
-
+    var self = new Emitter(this);
+    //adding support functions for event handling
+    this.events = [
+    /**
+     * when a node is clicked
+     */
+        'click',
+    /**
+     * when a node is hovered
+     */
+        'hover'
+    ]
     var $ = jQuery;
 
     // used by search
@@ -208,11 +219,12 @@ var PJ = function (params) {
                     // Trigger the contextMenu to popup
                     //console.log("tips", st.tips);
                     if (st.tips.config.enable) st.tips.hide(false); // hide the tip so it doesn't cover the context menu
-                    jQuery("#infovis-canvas").data("nodeId", node.id);
-                    jQuery("#infovis-canvas").data("node", node);
-                    jQuery("#infovis-canvas").data("info", html);
-                    jQuery("#infovis-canvas").contextMenu({x: e.pageX, y: e.pageY});
+//                    jQuery("#infovis-canvas").data("nodeId", node.id);
+//                    jQuery("#infovis-canvas").data("node", node);
+//                    jQuery("#infovis-canvas").data("info", html);
+//                    jQuery("#infovis-canvas").contextMenu({x: e.pageX, y: e.pageY});
                 }
+                self.emit('click', node)
             }
         },
 
@@ -256,9 +268,9 @@ var PJ = function (params) {
                 if (node.data.leaf) { // end taxon
                     //    name = name + "for linked data";
                 } else { //clade
-                    if( name ){
-                        name = "Inner Node:" +name;
-                    }else{
+                    if (name) {
+                        name = "Inner Node:" + name;
+                    } else {
                         name = "Inner Node: not named"
                     }
                 }
@@ -499,17 +511,17 @@ var PJ = function (params) {
         var sampleid = '';
         if (childJSON.length !== 0) {
             return {
-                "id":node.id,
-                "name":node.name,
-                "data":{
-                    'leaves':leaves,
-                    'leaf':0,
-                    'len':node.len,
-                    '$type':'circle',
-                    '$dim':5,
-                    '$color':'#fff'
+                "id": node.id,
+                "name": node.name,
+                "data": {
+                    'leaves': leaves,
+                    'leaf': 0,
+                    'len': node.len,
+                    '$type': 'circle',
+                    '$dim': 5,
+                    '$color': '#fff'
                 },
-                "children":childJSON
+                "children": childJSON
             };
         } else {
             node.name = node.name.replace(/_/g, ' ');
@@ -519,18 +531,18 @@ var PJ = function (params) {
             }
             var name = sampleArray[0];
             var nodeJSON = {
-                "id":node.id,
-                "name":node.name,
-                "data":{
-                    'leaves':0,
-                    'leaf':1,
-                    'len':node.len,
-                    '$height':20,
-                    '$type':'none',
-                    'sampleid':sampleid,
-                    'name':name
+                "id": node.id,
+                "name": node.name,
+                "data": {
+                    'leaves': 0,
+                    'leaf': 1,
+                    'len': node.len,
+                    '$height': 20,
+                    '$type': 'none',
+                    'sampleid': sampleid,
+                    'name': name
                 },
-                "children":childJSON
+                "children": childJSON
             };
             return nodeJSON;
         }
@@ -548,6 +560,7 @@ var PJ = function (params) {
             }
             return elem;
         }
+
         opt.codeBase = opt.codeBase || '';
 //        var popupHTML = '<div id="popup-close" style="position:relative; width:100%; background-color:lightblue"><a href="#" onclick="this.parentNode.parentNode.style.display=\'none\';" onmouseover="this.style.cursor=\'pointer\';" class="ui-dialog-titlebar-close ui-corner-all" role="button"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="popup-text"></div>';
         var navHTML = '<div style="position:relative"><div id="panup" style="position: absolute; left: 13px; top: 4px; width: 18px; height: 18px; cursor: pointer;"><img id="north" src="' + opt.codeBase + '/Extras/PhyloJive/north-mini.png" /></div><div id="panleft" style="position: absolute; left: 4px; top: 22px; width: 18px; height: 18px; cursor: pointer;"><img id="west" src="' + opt.codeBase + '/Extras/PhyloJive/west-mini.png" /></div><div id="panright" style="position: absolute; left: 22px; top: 22px; width: 18px; height: 18px; cursor: pointer;"><img id="east" src="' + opt.codeBase + '/Extras/PhyloJive/east-mini.png" /></div><div id="pandown" style="position: absolute; left: 13px; top: 40px; width: 18px; height: 18px; cursor: pointer;"><img id="south" src="' + opt.codeBase + '/Extras/PhyloJive/south-mini.png" /></div><div id="zoomout" style="position: absolute; left: 13px; top: 99px; width: 18px; height: 18px; cursor: pointer;"><img id="zoomOUT" src="' + opt.codeBase + '/Extras/PhyloJive/zoom-minus-mini.png" /></div><div id="zoomworld" style="position: absolute; left: 13px; top: 81px; width: 18px; height: 18px; cursor: pointer;"><img id="world" style="position: relative; width: 18px; height: 18px;" src="' + opt.codeBase + '/Extras/PhyloJive/zoom-world-mini.png"></div><div id="zoomin" style="position: absolute; left: 13px; top: 63px; width: 18px; height: 18px; cursor: pointer;"><img id="zoomIN" src="'
@@ -567,7 +580,7 @@ var PJ = function (params) {
             'id': 'jitcontainer',
             'className': 'clearfix',
             'style': {
-                'position': 'relative',
+                'position': 'relative'
 //                'width': border + 'px',
 //                'height': ((opt.height + 55 + border / 20)) + 'px'
             }
@@ -587,11 +600,11 @@ var PJ = function (params) {
         infovis = jQuery('#' + id)[0];
 
         parent = infovis.parentNode;
-        parent.replaceChild(jitcontainer, infovis);
+//        parent.replaceChild(jitcontainer, infovis);
 
-        centerJitContainer.appendChild(infovis);
-        jitcontainer.appendChild(centerJitContainer);
-        jitcontainer.appendChild(rightJitContainer);
+//        centerJitContainer.appendChild(infovis);
+//        jitcontainer.appendChild(centerJitContainer);
+//        jitcontainer.appendChild(rightJitContainer);
 
         popup = $E('div', {
             'id': 'popup',
@@ -627,7 +640,7 @@ var PJ = function (params) {
             'id': 'navigationPanel',
             'style': {
                 'left': (opt.width - 50) + 'px',
-                'z-index':1
+                'z-index': 1
             }
         });
 
@@ -671,6 +684,7 @@ var PJ = function (params) {
             var canvas = st.canvas;
             canvas.translate(pos.x, pos.y);
         }
+
         north.onmousedown = south.onmousedown = east.onmousedown = west.onmousedown = clickHandler;
 
         function zoomHandler() {
@@ -704,13 +718,13 @@ var PJ = function (params) {
     var getTree = function (url, callback, options) {
         var that = this
         var method = options.method || 'GET'
-        console.log( options )
+        console.log(options)
 
         $.ajax({
             url: url,
             dataType: options.dataType,
             success: function (data) {
-                if( typeof data == 'object'){
+                if (typeof data == 'object') {
                     options.format = data.format || options.format;
                     options.tree = data.tree;
                 } else {
@@ -733,7 +747,7 @@ var PJ = function (params) {
         switch (obj.format) {
             case 'newick':
                 if (obj.tree) {
-                    obj.tree = obj.tree.replace(/ /g,'_').replace(/'/g,"").replace(/\[pre-ingroup-marker\]/g,'')
+                    obj.tree = obj.tree.replace(/ /g, '_').replace(/'/g, "").replace(/\[pre-ingroup-marker\]/g, '')
                     dataObject = new Smits.PhyloCanvas.NewickParse(obj.tree);
                 } else if (obj.url) {
                     getTree(obj.url, setTree, obj)
@@ -743,7 +757,7 @@ var PJ = function (params) {
                 if (obj.tree) {
                     d = XMLObjectifier.textToXML(obj.tree);
                     d = XMLObjectifier.xmlToJSON(d);
-                    dataObject = new Smits.PhyloCanvas.NexmlParse(d, {nexml:obj.nexml});
+                    dataObject = new Smits.PhyloCanvas.NexmlParse(d, {nexml: obj.nexml});
                 } else if (obj.url) {
                     getTree(obj.url, setTree, obj)
                 }
@@ -762,103 +776,115 @@ var PJ = function (params) {
     }
 
     // add this class to make the labels disappear outside the bounds of canvas
-    $('#'+config.injectInto).addClass('infovis');
+    $('#' + config.injectInto).addClass('infovis');
 
-    console.log('before jit initialized' )
+    console.log('before jit initialized')
     console.log(config)
     st = new $jit.Phylo(config);
     navigation(config)
     setTree(config)
     console.log('after jit initialized')
 
-    return {
-        st: st,
-        setTree: function (tree, format, url) {
-            setTree( {
-                tree: tree,
-                format: format,
-                url: url
-            })
-        },
-        highlight: function (obj) {
-            var nodeName, value
-            for( var nodeName in obj){
-                value = obj[nodeName];
-                if (typeof value != 'object'){
-                    obj[nodeName]={'highlight':[1]}
-                }
-            }
-            st.character = obj;
-            console.log(obj)
-            st.firstCharacter = 'highlight';
-            st.colorCharacter();
-            console.log(st.characterList)
-            st.plot();
-        },
-        clearHighlight:function(){
-            console.log('in clear hightlight')
-            var nodeName, value;
-            var obj = st.character;
-            for( var nodeName in obj){
-                obj[nodeName]={}
-            }
+    this.st = st;
 
-            st.character = obj;
-            console.log(st.character)
-            st.firstCharacter ='hightlight'
-            st.colorCharacter()
-            st.plot();
-        },
-        ladderize: function () {
+    this.setTree = function (tree, format, url) {
+        setTree({
+            tree: tree,
+            format: format,
+            url: url
+        })
+    };
 
-        },
-        registerEvents: function () {
-
-        },
-        search: function (searchString, step) {
-
-            // if search has been done, clear the selected label
-            var len;
-            var root = st.graph.getNode(st.root);
-            if (result.length > 0) {
-                len = result.length;
-                pos = nextStep(pos, step, len);
-                var prevElem = st.labels.getLabel(result[nextStep(pos, -1 * step, len)].id);
-                prevElem.style.backgroundColor = '';
-            }
-            if (searchString && prevSearch !== searchString) {
-                result = [];
-                prevSearch = searchString;
-                root.eachSubgraph(function (node) {
-                    var name = node.name,
-                        pattern = new RegExp(searchString, 'i');
-                    if (name.match(pattern)) {
-                        result.push(node);
-                    }
-                });
-                pos = nextStep(undefined, step, len);
-            } else if (searchString === '') {
-                result = [];
-            }
-            if (result.length > 0) {
-                var shownNode = result[pos];
-                if (!shownNode.exist) {
-                    root.collapsed = true;
-                    st.nodesExpCol(root);
-                    st.computePositions(root, '');
-                    st.plot();
-                }
-                // transalate to top
-                var canvas = st.canvas,
-                    oy = canvas.translateOffsetY,
-                    xTranslate = 0,
-                    yTranslate = -oy;
-                st.canvas.translate(xTranslate, yTranslate);
-
-                var element = st.labels.getLabel(result[pos].id);
-                element.style.backgroundColor = 'yellow';
-                jQuery(element).click();
+    this.highlight = function (obj) {
+        var nodeName, value
+        for (var nodeName in obj) {
+            value = obj[nodeName];
+            if (typeof value != 'object') {
+                obj[nodeName] = {'highlight': [1]}
             }
         }
-    }
+        st.character = obj;
+        console.log(obj)
+        st.firstCharacter = 'highlight';
+        st.colorCharacter();
+        console.log(st.characterList)
+        st.plot();
+    };
+
+    this.clearHighlight = function () {
+        console.log('in clear hightlight')
+        var nodeName, value;
+        var obj = st.character;
+        for (var nodeName in obj) {
+            obj[nodeName] = {}
+        }
+
+        st.character = obj;
+        console.log(st.character)
+        st.firstCharacter = 'hightlight'
+        st.colorCharacter()
+        st.plot();
+    };
+
+    this.ladderize = function () {
+
+    };
+
+    this.registerEvents = function () {
+
+    };
+
+    this.search = function (searchString, step) {
+
+        // if search has been done, clear the selected label
+        var len;
+        var root = st.graph.getNode(st.root);
+        if (result.length > 0) {
+            len = result.length;
+            pos = nextStep(pos, step, len);
+            var prevElem = st.labels.getLabel(result[nextStep(pos, -1 * step, len)].id);
+            prevElem.style.backgroundColor = '';
+        }
+        if (searchString && prevSearch !== searchString) {
+            result = [];
+            prevSearch = searchString;
+            root.eachSubgraph(function (node) {
+                var name = node.name,
+                    pattern = new RegExp(searchString, 'i');
+                if (name.match(pattern)) {
+                    result.push(node);
+                }
+            });
+            pos = nextStep(undefined, step, len);
+        } else if (searchString === '') {
+            result = [];
+        }
+        if (result.length > 0) {
+            var shownNode = result[pos];
+            if (!shownNode.exist) {
+                root.collapsed = true;
+                st.nodesExpCol(root);
+                st.computePositions(root, '');
+                st.plot();
+            }
+            // transalate to top
+            var canvas = st.canvas,
+                oy = canvas.translateOffsetY,
+                xTranslate = 0,
+                yTranslate = -oy;
+            st.canvas.translate(xTranslate, yTranslate);
+
+            var element = st.labels.getLabel(result[pos].id);
+            element.style.backgroundColor = 'yellow';
+            jQuery(element).click();
+        }
+    };
+
+    this.colorTreeWithCharacter = function (charJson, selected) {
+        st.character = charJson;
+        st.config.firstCharacter = st.firstCharacter = selected[0];
+        st.config.selectedCharacters = st.selectedCharacters = selected;
+        st.colorCharacter();
+        st.plot();
+    };
 };

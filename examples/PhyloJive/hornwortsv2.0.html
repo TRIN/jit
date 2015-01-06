@@ -6,20 +6,43 @@
     <title>Australian hornworts phylogeny </title>
 
     <!-- Test CSS -->
-    <link type="text/css" href="examples/resources/base.css" rel="stylesheet"/>
     <link type="text/css" href="../../Extras/PhyloJive/PhyloJive.css" rel="stylesheet"/>
+    <link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/flick/jquery-ui.css"  rel="stylesheet"/>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="resources/nanoscroller.css" rel="stylesheet"/>
 </head>
 
 <body>
 <button  onclick="hightlight();">Highlight</button>
 <button onclick="clearing();">Clear</button>
 <div class="container">
-    <div id="info"></div>
-</div>
+    <div class="col-xs-6">
+        <div id="info"></div>
+    </div>
+    <div role="tabpanel" id="tabs" class="col-xs-6">
 
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-<!--<script type="text/javascript" src="https://raw.github.com/jackmoore/colorbox/master/jquery.colorbox-min.js"></script>-->
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#character" aria-controls="home" role="tab" data-toggle="tab">Character</a></li>
+            <li role="presentation"><a href="#map" aria-controls="profile" role="tab" data-toggle="tab">Map</a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="character"></div>
+            <div role="tabpanel" class="tab-pane" id="map">blah map blah..</div>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+<script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.0.0.js"></script>
+<script type="text/javascript" src="resources/knockout-sortable.min.js"></script>
+<script type="text/javascript" src="../../Extras/PhyloJive/emitter.js"></script>
+<script type="text/javascript" src="resources/jquery.nanoscroller.min.js"></script>
 
 <!--- <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script> -->
 <script type="text/javascript" src="http://www.jsphylosvg.com/js/jsphylosvg-min.js"></script>
@@ -27,7 +50,10 @@
 <!--<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js"></script>-->
 <script type="text/javascript" src="resources/jit.js"></script>
 <script type="text/javascript" src="../../Extras/PhyloJive/PJ.js"></script>
+<script type="text/javascript" src="../../Extras/PhyloJive/Character.js"></script>
 <script>
+    google.load("visualization", "1", {packages: ["corechart"]});
+    $( "#tabs" ).tab('show');
     var pj = new PJ({
         width: 500,
         height: 700,
@@ -37,7 +63,14 @@
         id: 'info',
         format: 'newick'
     });
-
+    var character = new Character({
+        id: "character",
+        pj: pj,
+        url: 'https://gist.githubusercontent.com/temi/1e8a7eee268a8082d9ca/raw/7467cabdccf2d2246dd409d2746846cd222a1ccb/charJson.json',
+        dataType:'json',
+        height:700,
+        headerHeight:41
+    });
     function hightlight(){
         pj.highlight({'Homo sapiens':'value'});
     };
@@ -46,6 +79,7 @@
         console.log('clearing')
         pj.clearHighlight()
     };
+//    $('.nano').nanoScroller();
 </script>
 
 </body>
