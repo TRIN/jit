@@ -9,7 +9,11 @@ var Character = function (options) {
     options = $.extend({
         type: 'GET',
         dataType: 'json',
-        headerHeight: 0
+        headerHeight: 0,
+        googleChartsLoaded: false,
+        delayedChartCall:[],
+        //flag to check if character has been loaded
+        characterloaded: false
     }, options);
 
     var id = options.id;
@@ -103,13 +107,22 @@ var Character = function (options) {
             self.emit('statechange', self.list());
         };
 
-        self.addCharacter = function () {
-            var opt = {name: "", id: 'charChart-' + count}
+        self.addCharacter = function (name) {
+            name = name||"";
+            var opt = {name: name, id: 'charChart-' + count}
             count++;
             var character = new Character(opt);
             self.selectedCharacter(character);
             self.characters.push(character);
             self.newChar = true;
+            return character;
+        };
+
+        self.addNamedCharacter = function (name) {
+            var character = self.addCharacter(name);
+            // to hide input tag and to bring label visible.
+            self.clearCharacter(character,null)
+            name && self.emit('statechange', self.list());
         };
 
         self.isCharacterSelected = function (character) {
@@ -152,6 +165,24 @@ var Character = function (options) {
             self.newChar = false;
             self.emit('statechange', self.list());
         }
+
+        self.updateChart = function(char,list){
+            var id = char.id(),
+                name = char.name(),charJson;
+            charJson = that.charJsonSubset(list);
+            temp = that.getCharArray(name,charJson);
+            if(temp == undefined || temp.length == 0){
+                return;
+            }
+            // check if values are string or numeric
+            if (typeof temp[0][1] === 'number') {
+                data = that.chartDataTransform(temp);
+                that.histogram(id,data);
+            } else {
+                data = that.chartDataTransform(temp);
+                that.columnchart(id, data)
+            }
+        }
     };
 
     ko.bindingHandlers.visibleAndSelect = {
@@ -184,30 +215,19 @@ var Character = function (options) {
 
     ko.bindingHandlers.addChart = {
         update: function (el, valueAccessor, innerFn, data, koObj) {
-            console.log('add chart!')
-            console.log(valueAccessor());
-//            console.log( self.selectedCharacter() )
             if (valueAccessor()) {
-                var id = data.id(), charName = data.name(),oneD=[];
-                var data = [
-                    ['Species Name', 'Value']
-                ], chart;
+                var id = data.id(), charName = data.name();
                 var temp = that.getCharArray(charName)
+                if(temp == undefined || temp.length == 0){
+                    return;
+                }
                 // check if values are string or numeric
                 if (typeof temp[0][1] === 'number') {
-                    temp.forEach(function (it) {
-                        data.push(it);
-                    });
+                    data = that.chartDataTransform(temp);
                     that.histogram(id,data);
                 } else {
-                    temp.forEach(function(it){
-                        oneD.push(it[1]);
-                    });
-                    temp = that.frequencyCount(oneD);
-                    temp.forEach(function (it) {
-                        data.push(it);
-                    });
-                    that.columnchart(id, data)
+                    data = that.chartDataTransform(temp);
+                    that.columnchart(id, data);
                 }
 //                google.visualization.events.addListener(chart, 'onmouseover', that.chartHover);
             }
@@ -217,34 +237,83 @@ var Character = function (options) {
     var view = new CharacterViewModel();
     ko.applyBindings(view);
 
+    /**
+     * transform data to be able to be displayed by chart. i.e. convert qualitative character to term frequency
+     * to display as histogram.
+     * @param temp
+     * @returns {*[]}
+     */
+    this.chartDataTransform = function(temp){
+        var data = [
+            ['Species Name', 'Value']
+        ],oneD=[];
+        var type = typeof temp[0][1] === 'number'?'histogram':'columnchart';
+        switch (type){
+            case 'histogram':
+                temp.forEach(function (it) {
+                    data.push(it);
+                });
+                break;
+            case 'columnchart':
+                temp.forEach(function(it){
+                    oneD.push(it[1]);
+                });
+                temp = that.frequencyCount(oneD);
+                temp.forEach(function (it) {
+                    data.push(it);
+                });
+                break;
+        }
+        return data;
+    };
+
+    /**
+     * draws a histogram. currently using google charts
+     * @param id - element id to draw the map
+     * @param data - contains data in google chart understandable format
+     */
     this.histogram = function(id, data){
-        var chart = new google.visualization.Histogram(document.getElementById(id));
-        var options = {
-            title: 'characters',
-            legend: { position: 'none' }
-        };
-        data = google.visualization.arrayToDataTable(data);
-        chart.draw(data, options);
+        if(options.googleChartsLoaded){
+            var chart = new google.visualization.Histogram(document.getElementById(id));
+            var opt = {
+                title: 'characters',
+                legend: { position: 'none' }
+            };
+            data = google.visualization.arrayToDataTable(data);
+            chart.draw(data, opt);
+        } else {
+            options.delayedChartCall.push([arguments.callee,this,arguments]);
+        }
     }
 
+    /**
+     * draws a column chart. this is used when data are qualitative i.e. string. currently using google charts
+     * @param id - element id to draw the map
+     * @param data - contains data in google chart understandable format
+     */
     this.columnchart = function(id, data){
-        var chart = new google.visualization.ColumnChart(document.getElementById(id));
-        var options = {
-            title: 'characters',
-            legend: { position: 'none' }
-        };
-        data = google.visualization.arrayToDataTable(data);
-        chart.draw(data, options);
+        if(options.googleChartsLoaded){
+            var chart = new google.visualization.ColumnChart(document.getElementById(id));
+            var opt = {
+                title: 'characters',
+                legend: { position: 'none' }
+            };
+            data = google.visualization.arrayToDataTable(data);
+            chart.draw(data, opt);
+        } else {
+            options.delayedChartCall.push([arguments.callee,this,arguments]);
+        }
+
     }
 
     //get charJson
     this.setCharJson = function (char) {
+        options.characterloaded = false;
         charJson = char;
         characterList = this.getCharList(charJson);
         view.characters.removeAll();
-        console.log(characterList);
-        console.log('setting new chars');
-        //TODO: fire an event
+        options.characterloaded = true;
+        this.emit('setcharacters')
     }
 
     this.getCharList = function (char) {
@@ -278,10 +347,11 @@ var Character = function (options) {
      * provide a character name and it will give a two dimensional array of species name and value
      * @param charName
      */
-    this.getCharArray = function (charName) {
+    this.getCharArray = function (charName,cjson) {
         var result = [], char;
-        for (var species in charJson) {
-            var char = charJson[species];
+        cjson = cjson || charJson;
+        for (var species in cjson) {
+            var char = cjson[species];
             char[charName] && char[charName].forEach(function (it) {
                 result.push([species, it]);
             })
@@ -336,6 +406,40 @@ var Character = function (options) {
 
         return result;
     }
+
+    this.updateCharts = function(node){
+        var chars = view.characters();
+        var i, data;
+        data = pj.getChildrensName(node);
+        for(i=0;i<chars.length;i++){
+            view.updateChart(chars[i],data);
+        }
+    }
+
+    this.initCharacters = function(){
+        var char;
+        if(options.initCharacters.length && pj.isTreeLoaded() && that.isCharacterLoaded()){
+            while( char = options.initCharacters.shift()) {
+                view.addNamedCharacter(char);
+            }
+        }
+    }
+
+    this.googleChartsLoaded = function(){
+        var delay;
+        console.log('google chart loaded');
+        options.googleChartsLoaded = true;
+        console.log(options.delayedChartCall.length)
+        while( delay = options.delayedChartCall.shift()){
+            delay[0].apply(delay[1],delay[2]);
+        }
+    }
+
+    this.isCharacterLoaded = function(){
+        return options.characterloaded;
+    }
+
+    options.characterloaded = false;
     /**
      * load character from url or from provided list.
      */
@@ -365,7 +469,12 @@ var Character = function (options) {
      * params
      * @selected - a list of
      */
-        'statechange'
+        'statechange',
+    /**
+     * when charjson is set. fired by setCharJson function. handle this event when user provides a set of characters
+     * to be initialized at start.
+     */
+        'setcharacters'
     ]
 
     /**
@@ -373,7 +482,7 @@ var Character = function (options) {
      */
     view.on('statechange', this.colorTreeWithCharacter)
 //    view.on('newchar', this.addChart)
-    pj.on('click', function () {
-        console.log('clicked on phylojive. handler in character');
-    })
+    pj.on('click', this.updateCharts);
+    this.on('setcharacters',this.initCharacters)
+    pj.on('treeloaded', this.initCharacters);
 };

@@ -9,7 +9,7 @@
     <link type="text/css" href="../../Extras/PhyloJive/PhyloJive.css" rel="stylesheet"/>
     <link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/flick/jquery-ui.css"  rel="stylesheet"/>
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="resources/nanoscroller.css" rel="stylesheet"/>
+    <!--<link href="resources/nanoscroller.css" rel="stylesheet"/>-->
 </head>
 
 <body>
@@ -42,7 +42,7 @@
 <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.0.0.js"></script>
 <script type="text/javascript" src="resources/knockout-sortable.min.js"></script>
 <script type="text/javascript" src="../../Extras/PhyloJive/emitter.js"></script>
-<script type="text/javascript" src="resources/jquery.nanoscroller.min.js"></script>
+<!--<script type="text/javascript" src="resources/jquery.nanoscroller.min.js"></script>-->
 
 <!--- <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script> -->
 <script type="text/javascript" src="http://www.jsphylosvg.com/js/jsphylosvg-min.js"></script>
@@ -58,19 +58,22 @@
         width: 500,
         height: 700,
         codeBase: '../..',
-        dataType:'jsonp',
-        url: 'http://115.146.93.110:8080/phylolink/phylo/getTree.json?studyId=2816&treeId=tree6557',
+        dataType:'json',
+//        url: 'http://115.146.93.110:8080/phylolink/phylo/getTree.json?studyId=2816&treeId=tree6557',
+        url: 'https://gist.githubusercontent.com/temi/48dd52a916eb671b9382/raw/677f434d2b2512a9cb9e6b16f7b56cdbf4a1ea7a/tree.json',
         id: 'info',
         format: 'newick'
     });
     var character = new Character({
         id: "character",
         pj: pj,
-        url: 'https://gist.githubusercontent.com/temi/1e8a7eee268a8082d9ca/raw/7467cabdccf2d2246dd409d2746846cd222a1ccb/charJson.json',
+        url: 'https://gist.githubusercontent.com/temi/48dd52a916eb671b9382/raw/d7bc78092f64997bed9c449ea168a8d7ea811701/char.json',
         dataType:'json',
         height:700,
-        headerHeight:41
+        headerHeight:41,
+        initCharacters:['section_taxonomy','seed_mass']
     });
+    google.setOnLoadCallback(character.googleChartsLoaded);
     function hightlight(){
         pj.highlight({'Homo sapiens':'value'});
     };

@@ -77,7 +77,11 @@ var PJ = function (params) {
     /**
      * when a node is hovered
      */
-        'hover'
+        'hover',
+    /**
+     * after tree has been loaded
+     */
+        'treeloaded'
     ]
     var $ = jQuery;
 
@@ -90,6 +94,8 @@ var PJ = function (params) {
         height: 600,
         offsetX: 0,
         align: 'left',
+        //treeloaded flag to check if the tree is loaded
+        treeloaded: false,
         alignName: false,
         lateralise: true,
         branchLength: true,
@@ -224,7 +230,8 @@ var PJ = function (params) {
 //                    jQuery("#infovis-canvas").data("info", html);
 //                    jQuery("#infovis-canvas").contextMenu({x: e.pageX, y: e.pageY});
                 }
-                self.emit('click', node)
+                console.log(node)
+                node && self.emit('click', node)
             }
         },
 
@@ -731,6 +738,7 @@ var PJ = function (params) {
                     options.tree = data;
                 }
                 callback.apply(that, [options])
+                console.log(that)
             }
         })
     }
@@ -744,6 +752,7 @@ var PJ = function (params) {
      */
     var setTree = function (obj) {
         var dataObject, json, d;
+        config.treeloaded = false;
         switch (obj.format) {
             case 'newick':
                 if (obj.tree) {
@@ -771,6 +780,9 @@ var PJ = function (params) {
             st.compute();
             st.onClick(st.root);
             st.plot();
+            config.treeloaded = true;
+            // fire event after tree is loaded
+            pj.emit('treeloaded');
             console.log('successfully completed')
         }
     }
@@ -792,7 +804,7 @@ var PJ = function (params) {
             tree: tree,
             format: format,
             url: url
-        })
+        });
     };
 
     this.highlight = function (obj) {
@@ -887,4 +899,26 @@ var PJ = function (params) {
         st.colorCharacter();
         st.plot();
     };
+
+    this.getChildrensName = function(node){
+        var result = []
+        node.eachSubgraph(function (n) {
+            if (n.data.leaf) {
+                result.push(n.name);
+            }
+        });
+        return result;
+    }
+
+    this.getSelection = function(){
+        return st.clickedNode;
+    }
+
+    /**
+     * check if tree is loaded
+     * @returns {boolean}
+     */
+    this.isTreeLoaded = function(){
+        return config.treeloaded;
+    }
 };
