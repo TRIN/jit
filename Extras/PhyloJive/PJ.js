@@ -68,6 +68,7 @@ var colourScheme = {
 var PJ = function (params) {
     console.log('in pj');
     var self = new Emitter(this);
+    var pj = this;
     //adding support functions for event handling
     this.events = [
     /**
@@ -119,13 +120,15 @@ var PJ = function (params) {
         //set overridable=true for styling individual
         //nodes or edges
         Node: {
-            height: 40,
-            width: 20,
+            height: 8,
+            width: 5,
             type: 'circle',
             dim: 5,
             color: '#aaa',
             overridable: true,
-            align: 'left'
+            align: 'left',
+            selectedShape: 'ellipse',
+            selectedColor: 'green'
         },
         Edge: {
             type: 'line',
@@ -229,6 +232,9 @@ var PJ = function (params) {
 //                    jQuery("#infovis-canvas").data("node", node);
 //                    jQuery("#infovis-canvas").data("info", html);
 //                    jQuery("#infovis-canvas").contextMenu({x: e.pageX, y: e.pageY});
+                    st.clickedNode = node;
+                    redraw()
+                    st.plot()
                 }
                 console.log(node)
                 node && self.emit('click', node)
@@ -490,6 +496,10 @@ var PJ = function (params) {
             } else {
                 jQuery('#' + dom.id + ' .quant').removeClass('quantAlign');
             }
+        },
+
+        getSelectedNode:function(){
+            return st.clickedNode;
         }
     }, params);
     config.injectInto = config.id;
@@ -570,9 +580,24 @@ var PJ = function (params) {
 
         opt.codeBase = opt.codeBase || '';
 //        var popupHTML = '<div id="popup-close" style="position:relative; width:100%; background-color:lightblue"><a href="#" onclick="this.parentNode.parentNode.style.display=\'none\';" onmouseover="this.style.cursor=\'pointer\';" class="ui-dialog-titlebar-close ui-corner-all" role="button"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="popup-text"></div>';
-        var navHTML = '<div style="position:relative"><div id="panup" style="position: absolute; left: 13px; top: 4px; width: 18px; height: 18px; cursor: pointer;"><img id="north" src="' + opt.codeBase + '/Extras/PhyloJive/north-mini.png" /></div><div id="panleft" style="position: absolute; left: 4px; top: 22px; width: 18px; height: 18px; cursor: pointer;"><img id="west" src="' + opt.codeBase + '/Extras/PhyloJive/west-mini.png" /></div><div id="panright" style="position: absolute; left: 22px; top: 22px; width: 18px; height: 18px; cursor: pointer;"><img id="east" src="' + opt.codeBase + '/Extras/PhyloJive/east-mini.png" /></div><div id="pandown" style="position: absolute; left: 13px; top: 40px; width: 18px; height: 18px; cursor: pointer;"><img id="south" src="' + opt.codeBase + '/Extras/PhyloJive/south-mini.png" /></div><div id="zoomout" style="position: absolute; left: 13px; top: 99px; width: 18px; height: 18px; cursor: pointer;"><img id="zoomOUT" src="' + opt.codeBase + '/Extras/PhyloJive/zoom-minus-mini.png" /></div><div id="zoomworld" style="position: absolute; left: 13px; top: 81px; width: 18px; height: 18px; cursor: pointer;"><img id="world" style="position: relative; width: 18px; height: 18px;" src="' + opt.codeBase + '/Extras/PhyloJive/zoom-world-mini.png"></div><div id="zoomin" style="position: absolute; left: 13px; top: 63px; width: 18px; height: 18px; cursor: pointer;"><img id="zoomIN" src="'
-            + opt.codeBase
-            + '/Extras/PhyloJive/zoom-plus-mini.png" /></div><div style="position:absolute;left:-50px;top:123px;width:130px"> Status: <span id="log"></span></div></div>';
+        var navHTML = '<div style="position:relative"><div id="panup" style="position: absolute; left: 13px; top: 4px;' +
+            ' width: 18px; height: 18px; cursor: pointer;"><div id="north"><span class="glyphicon glyphicon-arrow-up"' +
+            ' aria-hidden="true"></span></div></div><div id="panleft" style="position: absolute; left: 4px; top: 22px;' +
+            ' width: 18px; height: 18px; cursor: pointer;"><div id="west"><span class="glyphicon glyphicon-arrow-left"' +
+            ' aria-hidden="true"></span></div></div><div id="panright" style="position: absolute; left: 22px; ' +
+            'top: 22px; width: 18px; height: 18px; cursor: pointer;"><div id="east"><span class="glyphicon ' +
+            'glyphicon-arrow-right" aria-hidden="true"></span></div></div><div id="pandown" style="position: ' +
+            'absolute; left: 13px; top: 40px; width: 18px; height: 18px; cursor: pointer;"><div id="south"><span ' +
+            'class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></div></div>' +
+            '<div id="zoomout" style="position: absolute; left: 13px; top: 99px; width: 18px; height: 18px; ' +
+            'cursor: pointer;"><div id="zoomOUT"><span class="glyphicon glyphicon-zoom-out"></span></div></div>' +
+            '<div id="zoomworld" style="position: absolute; left: 13px; top: 63px; width: 18px; height: 18px; cursor: pointer;"><div id="world" style="position: relative; width: 18px; height: ' +
+            '18px;" ><span class="glyphicon glyphicon-resize-small"></span></div></div>' +
+            '<div id="zoomin" style="position: absolute; left: 13px; top: 81px; width: 18px; height: 18px; cursor: ' +
+            'pointer;">' +
+            '<div id="zoomIN"><span class="glyphicon glyphicon-zoom-in"></span></div></div>' +
+            '<div style="position: absolute; left: 13px; top: 63px; width: 18px; height: 18px; cursor: pointer;position:absolute;left:-50px;top:123px;' +
+            'width:130px"> Status: <span id="log"></span></div></div>';
 
         var jitcontainer, rightJitContainer, centerJitContainer,
             id = typeof (opt.injectInto) == 'string' ? opt.injectInto : opt.injectInto.id,
@@ -787,6 +812,39 @@ var PJ = function (params) {
         }
     }
 
+    var redraw = function () {
+        var legendElem = $jit.id('legend'),
+            i, node, label;
+//        if (st.character) {
+////            html = st.colorCharacter() || '';
+////            jQuery('#legendBody').html(html);
+//            legendElem.style.display = 'inline';
+//        } else {
+//            legendElem.style.display = 'none';
+//        }
+
+        for (i in st.graph.nodes) {
+            if (st.graph.nodes.hasOwnProperty(i)) {
+                node = st.graph.nodes[i];
+                //         if( node.data.leaf ) {
+                label = jQuery('#' + node.id)[0];
+                label && st.config.onCreateLabel(label, node);
+                //         }
+            }
+        }
+
+        //optional: make a translation of the tree
+        //emulate a click on the root node.
+//        var currentZoom = st.zoomIndex;
+//        st.onClick(st.root);
+//        alert("pre-fitScreen, zoom = " + st.zoomIndex);
+//        console.log("st", st);
+//        st.fitScreen();
+//        st.zoomIndex = currentZoom;
+//        if (currentZoom) st.zoom(currentZoom);
+//        alert("post-fitScreen, zoom = " + st.zoomIndex);
+    }
+
     // add this class to make the labels disappear outside the bounds of canvas
     $('#' + config.injectInto).addClass('infovis');
 
@@ -897,6 +955,7 @@ var PJ = function (params) {
         st.config.firstCharacter = st.firstCharacter = selected[0];
         st.config.selectedCharacters = st.selectedCharacters = selected;
         st.colorCharacter();
+        redraw();
         st.plot();
     };
 

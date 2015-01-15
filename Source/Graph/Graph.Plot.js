@@ -631,24 +631,26 @@ Graph.Plot = {
 
     */
     plotNode: function(node, canvas, animating) {
-        var f = node.getData('type'), 
+        var f = this.config.getSelectedNode() == node? node.Node.selectedShape :node.getData('type'),
             ctxObj = this.node.CanvasStyles;
-        if(f != 'none') {
-          var width = node.getData('lineWidth'),
-              color = node.getData('color'),
-              alpha = node.getData('alpha'),
-              ctx = canvas.getCtx();
-          ctx.save();
-          ctx.lineWidth = width;
-          ctx.fillStyle = ctx.strokeStyle = color;
-          ctx.globalAlpha = alpha;
-          
-          for(var s in ctxObj) {
-            ctx[s] = node.getCanvasStyle(s);
-          }
 
-          this.nodeTypes[f].render.call(this, node, canvas, animating);
-          ctx.restore();
+        if(f != 'none') {
+            var width = node.getData('lineWidth'),
+                color =  this.config.getSelectedNode() == node? node.Node.selectedColor:node.getData('color'),
+                alpha = node.getData('alpha'),
+                ctx = canvas.getCtx();
+
+            ctx.save();
+            ctx.lineWidth = width;
+            ctx.fillStyle = ctx.strokeStyle = color;
+            ctx.globalAlpha = alpha;
+
+            for(var s in ctxObj) {
+                ctx[s] = node.getCanvasStyle(s);
+            }
+
+            this.nodeTypes[f].render.call(this, node, canvas, animating);
+            ctx.restore();
         }
     },
     

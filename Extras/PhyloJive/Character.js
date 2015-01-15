@@ -12,6 +12,8 @@ var Character = function (options) {
         headerHeight: 0,
         googleChartsLoaded: false,
         delayedChartCall:[],
+        chartWidth:400,
+        chartHeight:200,
         //flag to check if character has been loaded
         characterloaded: false
     }, options);
@@ -21,6 +23,7 @@ var Character = function (options) {
     var pj = options.pj;
     var template = '\
     <div id="main">\
+        <div class="btn btn-xs btn-primary top-buffer" data-bind="click: addCharacter">Add Character</div>\
         <div class="container" data-bind="sortable: {data:characters, afterMove: $root.onMove}">\
             <div class="item top-buffer" title="You can drag or edit this item">\
                 <div data-bind="visible: !$root.isCharacterSelected($data), attr:{class: $root.characterClass($data)}">\
@@ -34,7 +37,6 @@ var Character = function (options) {
                 </div>\
             </div>\
         </div>\
-        <div class="btn btn-xs btn-primary top-buffer" data-bind="click: addCharacter">Add Character</div>\
         <div data-bind="sortable: {data:characters}">\
             <div class="top-buffer panel panel-default">\
                 <div class="panel-heading" data-bind="text: name"></div>\
@@ -108,7 +110,10 @@ var Character = function (options) {
         };
 
         self.addCharacter = function (name) {
-            name = name||"";
+            if(typeof name != 'string'){
+                name = "";
+            }
+
             var opt = {name: name, id: 'charChart-' + count}
             count++;
             var character = new Character(opt);
@@ -168,10 +173,15 @@ var Character = function (options) {
 
         self.updateChart = function(char,list){
             var id = char.id(),
-                name = char.name(),charJson;
+                name = char.name(),charJson,i;
             charJson = that.charJsonSubset(list);
             temp = that.getCharArray(name,charJson);
             if(temp == undefined || temp.length == 0){
+//                for(i in charJson){
+//                    temp.push([undefined,undefined])
+//                }
+//                data = that.chartDataTransform([0,0]);
+                that.columnchart(id,[['',''],[0,0]]);
                 return;
             }
             // check if values are string or numeric
@@ -275,13 +285,18 @@ var Character = function (options) {
     this.histogram = function(id, data){
         if(options.googleChartsLoaded){
             var chart = new google.visualization.Histogram(document.getElementById(id));
+            var width = options.chartWidth;
+            var height = options.chartHeight;
             var opt = {
+                width: width,
+                height: height,
                 title: 'characters',
                 legend: { position: 'none' }
             };
             data = google.visualization.arrayToDataTable(data);
             chart.draw(data, opt);
         } else {
+            // some times google chart is not ready when this function is called
             options.delayedChartCall.push([arguments.callee,this,arguments]);
         }
     }
@@ -294,13 +309,18 @@ var Character = function (options) {
     this.columnchart = function(id, data){
         if(options.googleChartsLoaded){
             var chart = new google.visualization.ColumnChart(document.getElementById(id));
+            var width = options.chartWidth;
+            var height = options.chartHeight;
             var opt = {
+                width: width,
+                height: height,
                 title: 'characters',
                 legend: { position: 'none' }
             };
             data = google.visualization.arrayToDataTable(data);
             chart.draw(data, opt);
         } else {
+            // some times google chart is not ready when this function is called
             options.delayedChartCall.push([arguments.callee,this,arguments]);
         }
 
@@ -418,6 +438,7 @@ var Character = function (options) {
 
     this.initCharacters = function(){
         var char;
+        // make sure tree and character data are loaded.
         if(options.initCharacters.length && pj.isTreeLoaded() && that.isCharacterLoaded()){
             while( char = options.initCharacters.shift()) {
                 view.addNamedCharacter(char);
