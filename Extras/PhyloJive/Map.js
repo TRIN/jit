@@ -143,7 +143,8 @@ function Map(options) {
             legendCtrl.options.urlParams.cm = val;
             legendCtrl.update({})
             that.updateEnv();
-        }
+        },
+        url:options.facetUrl
     });
     colorBy.addTo(map);
 
@@ -182,8 +183,8 @@ function Map(options) {
         });
         that.updateEnv();
         map.addLayer(layer);
-        legendCtrl.options.urlParams.q = options.query;
-        legendCtrl.options.urlParams.fq = params;
-        legendCtrl.update({});
+//        legendCtrl.options.urlParams.q = options.query;
+//        legendCtrl.options.urlParams.fq = params;
+//        legendCtrl.update({});
     });
 }
