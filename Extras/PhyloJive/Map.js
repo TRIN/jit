@@ -99,6 +99,7 @@ function Map(options) {
 
     map.addControl(new RecordLayerControl());
     var outlineCtrl = new L.Control.Checkbox({
+        position:'bottomleft',
         text: 'Outline: ',
         onClick: function(){
             that.updateEnv();
@@ -106,7 +107,8 @@ function Map(options) {
     })
     map.addControl(outlineCtrl);
     var opactiySlider = new L.Control.Slider({
-        text: 'Opacity: ',
+        position:'bottomleft',
+        text: 'Opacity:&nbsp;',
         onChange: function (val) {
             env.opacity = val;
             that.updateEnv();
@@ -121,7 +123,8 @@ function Map(options) {
     });
     map.addControl(opactiySlider);
     var sizeSlider = new L.Control.Slider({
-        text: 'Size: ',
+        text: 'Size:&nbsp;',
+        position:'bottomleft',
         onChange: function (val) {
             env.size = Number.parseInt(val);
             that.updateEnv();
@@ -134,6 +137,22 @@ function Map(options) {
         }
     });
     map.addControl(sizeSlider);
+
+    var colorBy = new L.Control.Select({
+        onChange:function(val){
+            env.colormode = val;
+            legendCtrl.options.urlParams.cm = val;
+            legendCtrl.update({})
+            that.updateEnv();
+        }
+    });
+    colorBy.addTo(map);
+
+    var legendCtrl = new L.Control.Legend(options.legend);
+    // initializing
+    env.colormode = legendCtrl.options.urlParams.cm = colorBy.getValue();
+    map.addControl(legendCtrl);
+    legendCtrl.update({});
 
     layer = L.tileLayer.wms(options.layer, {
 //        layers: 'Ala occurrence',
@@ -150,7 +169,7 @@ function Map(options) {
         var children = pj.getChildrensName(node);
         var params;
         for (i in children) {
-            children[i] = options.tableFieldName + ':"' + children[i] + '"';
+            children[i] = options.filterFieldName + ':"' + children[i] + '"';
         }
         params = children.join('+OR+').replace(/ /g, '+');
         layer && map.removeLayer(layer);

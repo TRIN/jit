@@ -60,7 +60,8 @@ L.Control.Slider = L.Control.extend({
         }
 
         var label = L.DomUtil.create('label','', cont);
-        label.innerHTML = this.options.text + ' ' + this.options.sliderOpt.value;
+        label.innerHTML = this.options.text + ' ' + this.options.sliderOpt.value+'&nbsp&nbsp&nbsp';
+        label.style['display']='inline-block'
         this._label = label;
 
         var div = L.DomUtil.create('div', '', cont);
@@ -68,7 +69,7 @@ L.Control.Slider = L.Control.extend({
 
         $(div).slider(this.options.sliderOpt).on('slideStop', function(ev){
             var value = parseFloat(ev.value).toFixed(1); // prevent values like 0.30000000004 appearing
-            label.innerHTML = that.options.text + ' ' + value;
+            label.innerHTML = that.options.text + ' ' + value+'&nbsp&nbsp&nbsp';
             that.onChange(value);
         });
 
@@ -90,6 +91,6 @@ L.Control.Slider = L.Control.extend({
     }
 });
 
-L.control.zoom = function (options) {
-    return new L.Control.Zoom(options);
+L.control.Slider = function (options) {
+    return new L.Control.slider(options);
 };

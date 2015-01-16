@@ -179,14 +179,14 @@
 
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active"><a href="#character" aria-controls="home" role="tab" data-toggle="tab">Character</a></li>
-            <li role="presentation"><a href="#map" aria-controls="profile" role="tab" data-toggle="tab" id="mapTab">Map</a></li>
+            <li role="presentation"><a href="#character" aria-controls="home" role="tab" data-toggle="tab">Character</a></li>
+            <li role="presentation" class="active"><a href="#map" aria-controls="profile" role="tab" data-toggle="tab" id="mapTab">Map</a></li>
         </ul>
 
         <!-- Tab panes -->
         <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="character"></div>
-            <div role="tabpanel" class="tab-pane" id="map"></div>
+            <div role="tabpanel" class="tab-pane" id="character"></div>
+            <div role="tabpanel" class="tab-pane active" id="map"></div>
         </div>
 
     </div>
@@ -209,6 +209,8 @@
 <script src='http://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.2/Leaflet.fullscreen.min.js'></script>
 <script type="text/javascript"  src="../../Extras/PhyloJive/Control.Checkbox.js"></script>
 <script type="text/javascript"  src="../../Extras/PhyloJive/Control.Slider.js"></script>
+<script type="text/javascript"  src="../../Extras/PhyloJive/Control.Legend.js"></script>
+<script type="text/javascript"  src="../../Extras/PhyloJive/Control.Select.js"></script>
 <!-- leaflet dependency END -->
 
 <!--<script type="text/javascript" src="resources/jquery.nanoscroller.min.js"></script>-->
@@ -232,27 +234,32 @@
             dataType:'json',
 //        url: 'http://115.146.93.110:8080/phylolink/phylo/getTree.json?studyId=2816&treeId=tree6557',
 //            url: 'https://gist.githubusercontent.com/temi/48dd52a916eb671b9382/raw/677f434d2b2512a9cb9e6b16f7b56cdbf4a1ea7a/tree.json',
-            url:'https://gist.githubusercontent.com/temi/48dd52a916eb671b9382/raw/e2b6c5256d897e8662372d0d7c7e7f1afd61e805/lineage.tre',
+//            url:'https://gist.githubusercontent.com/temi/48dd52a916eb671b9382/raw/e2b6c5256d897e8662372d0d7c7e7f1afd61e805/lineage.tre',
+            url:'https://gist.githubusercontent.com/temi/48dd52a916eb671b9382/raw/2af4a2e9c69b15b2a8edb5e2204f6922ffa77120/oedura.json',
             id: 'info',
             format: 'newick'
+//            tree:'(Outgroup_WAMR167805:0.13147827413945043,((((((NTMR13295:0.010385461980010655,NTMR36709:0.010501269151019912):0.006757370973816845,(NTMR13619:0.009669593364328113,((NTMR36731:2.1186336629785973E-6,(NTMR36717:6.709856761633604E-4,NTMR36746:0.0010997357694677579):5.491155768522216E-4):0.0017257540667320048,(NTMR13222:0.008769652992523608,(NTMR19029:2.118633663006353E-6,(NTMR22774:0.0022551953853833517,NTMR19030:2.1186336629785973E-6):5.606058264006619E-4):0.0023591431987870226):0.0011241622594760359):0.0034069393868388087):0.0034439119473326785)"north1":0.00964539004188647,(((NTMR35680:0.011971059555160118,(((((NMV72598:2.118633662992475E-6,NMV72600:2.118633662992475E-6):2.118633662992475E-6,NMV72599:2.118633662992475E-6):2.118633662992475E-6,NMV72584:2.118633662992475E-6):2.118633662992475E-6,NMV72621:7.31682960620525E-4):0.015312405722853625,NTMR35753:0.007081990414151668):0.003214071940246477):0.004186462860754858,(NTMR34986:5.650915099646436E-4,NTMR34987:2.118633663006353E-6):0.015141810823029456):0.0015446860178272015,SAM34170:0.01677984036759317)"gemmata":0.0020123052117578255):0.005837762416333048,((NTMR22104:0.0026998325426042247,NTMR22183:0.011182363417152313)"North 3":0.02370895487963326,((SAMAR34158:5.784626513777452E-4,SAMAR34156:2.118633662992475E-6)"North 2":0.023305272160865073,NTMR22444"North 4"]:0.02124649631429565):0.004905790692088879):0.0025215719267839):0.02929121083346725,(SAMAR34188:0.0275268630743547,((SAMAR35425:2.1186336629785973E-6,SAMAR34209:0.0013622569957308095):0.0012985819445295033,NTMR21288:4.524646114556774E-4):0.02202253286814332)"gulf":0.010106276231833078):0.007577543826311539,((((((WAMR110173:0.0029790982407626454,(((WAMR135447:2.1186336629785973E-6,WAMR135369:2.1186336629785973E-6):2.118633663006353E-6,WAMR135449:2.118633663006353E-6):7.297588721515424E-4,((WAMR119992:2.1186336629785973E-6,(WAMR135448:2.118633663006353E-6,WAMR135445:2.118633663006353E-6):2.1186336629785973E-6):2.1186336629785973E-6,WAMR127833:2.1186336629785973E-6):2.118633663006353E-6):0.0029633426563194787):0.0022516702007938927,((WAMR119837:0.0022351431447395487,((WAMR129635:7.328455336645945E-4,WAMR119991:7.312095876146063E-4):7.351884718141133E-4,(((WAMR157504:2.118633663006353E-6,WAMR129595:2.118633663006353E-6):2.118633663006353E-6,WAMR157516:2.118633663006353E-6):2.1186336629785973E-6,WAMR129622:2.1186336629785973E-6):7.332988030018528E-4):7.210364173684813E-4):0.0030487088386141337,(((WAMR157595:7.482932699671152E-4,((WAMR111891:7.33676832981478E-4,(WAMR154785:2.1186336629785973E-6,WAMR126074:2.1186336629785973E-6):2.118633663006353E-6):0.0014698321771776934,WAMR125106:2.1186336629785973E-6):2.1186336629785973E-6):2.118633663006353E-6,WAMR154783:0.0020353164517123157):2.118633663006353E-6,WAMR119993:0.0030084193783402047):0.0020085571985157813):0.004869947723925433):0.002699352276984257,(((WAMR106289:2.118633663006353E-6,(WAMR154796:2.118633663006353E-6,WAMR154797:2.118633663006353E-6):2.118633663006353E-6):6.044222104953645E-4,WAM105965:0.003415369682312014):0.008712477378913702,WAMR132296:0.012497503215517514):0.004224301410276882):0.001040275427182824,(WAMR119086:0.008950387323414716,(WAMR114252:0.0063007409910142975,((WAMR102618:2.1186336629785973E-6,WAMR102619:2.1186336629785973E-6):2.118633663006353E-6,WAMR102622:2.118633663006353E-6):0.0034599758975187023):0.008613329347038484):0.003899511698487207):0.006920657758844734,((WAMR160074:0.002029770097058764,WAMR160066:0.002166064839437515):0.014137407097553373,(((WAMR132633:2.1186336629785973E-6,(WAMR132626:7.402923573402442E-4,WAMR165241:0.004512448932821628):2.1186336629785973E-6):2.118633663006353E-6,WAMR165242:2.118633663006353E-6):0.00623428562180911,((WAMR146594:2.118633663006353E-6,WAMR146593:2.118633663006353E-6):7.242228322228428E-4,WAMR165150:0.007591772472147595):0.0027926953176156677):0.004577886878288806):0.008526101841972611)"western":0.025748360892109357,(((SAMAR42913:0.007351448554289958,SAMAR42883:0.003894966262460109):0.00817333028281364,(SAMAR55902:0.009592408202538233,(ABTC113886:0.00750485036252363,(SAMR52203:2.118633663006353E-6,((AMS138446:0.0022082225320283477,(SAMAR54300:0.0011360870047956995,SAMAR52333:2.1186336629785973E-6):2.1186336629785973E-6):2.118633663006353E-6,SAMAR41324:2.118633663006353E-6):2.118633663006353E-6):0.00470126787998465):0.00240329025827532):0.004588819698549074)"eastern":0.021424791674139604,((NTMR18278:0.004141213325794368,(((SAMAR65905:7.271112273463665E-4,SAMAR38843:2.1186336629785973E-6):2.118633663006353E-6,SAMR38842:2.118633663006353E-6):0.0010698675765927201,(SAMAR38845:0.0014598841858423361,SAMAR38844:0.002197391608899618):2.1186336629785973E-6):0.0014793955694044625):0.015701440045702564,((AMS136049:5.576475392313762E-4,NTMR35902:2.118633663006353E-6):5.497493068443715E-4,NTMR35912:2.118633663006353E-6):0.011904140196106028)"central":0.010371278835746622):0.019523039802274766):0.008136254175549695):0.057196629256102166);'
         });
         var character = new Character({
             id: "character",
             pj: pj,
 //            url: 'https://gist.githubusercontent.com/temi/48dd52a916eb671b9382/raw/d7bc78092f64997bed9c449ea168a8d7ea811701/char.json',
-            url:'http://115.146.93.110:8080/phylolink/ala/getSandboxCharJson?drid=drt2783&fields=[%22phenotype_s%22,%22cl620%22,%22cl617%22]&key=lineage_ID_s',
+//            url:'http://115.146.93.110:8080/phylolink/ala/getSandboxCharJson?drid=drt2783&fields=[%22phenotype_s%22,%22cl620%22,%22cl617%22]&key=lineage_ID_s',
+            url:'http://localhost:8080/phylolink/ala/getSandboxCharJson?drid=drt2811&fields=[%22phenotype_s%22,%22Body_length_i%22,%22Genetic_lineage_s%22,%22Allozymes_s%22]&key=REGNO_s',
             dataType:'jsonp',
             height:700,
             headerHeight:41,
-            initCharacters:['Phenotype']
+            initCharacters:['Genetic lineage']
         });
         var map = new Map({
             id: 'map',
             pj: pj,
             height: 650,
             width: $('#tab-content').width(),
-            layer: 'http://sandbox.ala.org.au/biocache-service/webportal/wms/reflect?q=data_resource_uid%3Adrt2783',
-            tableFieldName: 'lineage_ID_s',
+//            layer: 'http://sandbox.ala.org.au/biocache-service/webportal/wms/reflect?q=data_resource_uid%3Adrt2783',
+            layer:'http://sandbox.ala.org.au/biocache-service/webportal/wms/reflect?q=data_resource_uid:drt2811',
+//            tableFieldName: 'lineage_ID_s',
+            filterFieldName:'REGNO_s',
             onFilter:function(node){
                 var children = pj.getChildrensName(node);
                 return $.ajax({
@@ -266,6 +273,19 @@
                         this.qid = data;
                     }
                 });
+            },
+            legend:{
+                urlParams:{
+                    cm:'Genetic_lineage_s',
+                    type:'application/json',
+                    q:'data_resource_uid:drt2811'
+                }
+            },
+            env: {
+                'colormode': 'Genetic_lineage_s',
+                'name': 'circle',
+                'size': 4,
+                'opacity': 0.8
             }
         });
 

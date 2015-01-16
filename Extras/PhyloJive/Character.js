@@ -355,7 +355,7 @@ var Character = function (options) {
             pj.colorTreeWithCharacter(charJson, selected);
         } else {
             // since the color is not disappearing when an empty array of selected character is passed
-            pj.colorTreeWithCharacter(charJson, ['12#!!@']);
+            charJson && pj.colorTreeWithCharacter(charJson, ['12#!!@']);
         }
     }
 
