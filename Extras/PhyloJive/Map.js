@@ -29,8 +29,7 @@ function Map(options) {
     var pj = options.pj;
     $('#' + id).height(options.height);
     $('#' + id).width(options.width);
-
-
+    var query = options.query;
     this.invalidateSize = function () {
         map.invalidateSize(false);
     };
@@ -172,6 +171,7 @@ function Map(options) {
             children[i] = options.filterFieldName + ':"' + children[i] + '"';
         }
         params = children.join('+OR+').replace(/ /g, '+');
+        query = options.query;
         layer && map.removeLayer(layer);
         layer = L.tileLayer.wms(options.layer + '&fq=' + params, {
 //            layers: 'Ala occurrence',
@@ -182,5 +182,8 @@ function Map(options) {
         });
         that.updateEnv();
         map.addLayer(layer);
+        legendCtrl.options.urlParams.q = options.query;
+        legendCtrl.options.urlParams.fq = params;
+        legendCtrl.update({});
     });
 }

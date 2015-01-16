@@ -8,7 +8,7 @@ L.Control.Legend = L.Control.extend({
         url: undefined,
         dataType:'jsonp',
         proxy: true,
-        proxyUrl: 'http://localhost:8080/phylolink/ala/jsonp',
+        proxyUrl: 'http://115.146.93.110:8080/phylolink/ala/jsonp',
         baseUrl:'http://sandbox.ala.org.au/ala-hub/occurrence/legend',
         urlParams:{
             cm:undefined,

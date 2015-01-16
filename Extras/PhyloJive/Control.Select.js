@@ -8,7 +8,7 @@ L.Control.Select = L.Control.extend({
         title:'click me',
         text:'Color by: ',
         initialValue:[{"name":"REGNO_s","displayName":"REGNO"},{"name":"Body_length_i","displayName":"Body length"},{"name":"Genetic_lineage_s","displayName":"Genetic lineage"}],
-        url:'http://localhost:8080/phylolink/ala/facets?drid=drt2811',
+        url:'http://115.146.93.110:8080/phylolink/ala/facets?drid=drt2811',
         dataType:'jsonp',
         style:{
             height:'30px',

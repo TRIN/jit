@@ -245,7 +245,7 @@
             pj: pj,
 //            url: 'https://gist.githubusercontent.com/temi/48dd52a916eb671b9382/raw/d7bc78092f64997bed9c449ea168a8d7ea811701/char.json',
 //            url:'http://115.146.93.110:8080/phylolink/ala/getSandboxCharJson?drid=drt2783&fields=[%22phenotype_s%22,%22cl620%22,%22cl617%22]&key=lineage_ID_s',
-            url:'http://localhost:8080/phylolink/ala/getSandboxCharJson?drid=drt2811&fields=[%22phenotype_s%22,%22Body_length_i%22,%22Genetic_lineage_s%22,%22Allozymes_s%22]&key=REGNO_s',
+            url:'http://115.146.93.110:8080/phylolink/ala/getSandboxCharJson?drid=drt2811&fields=["REGNO_s","Body_length_i","Genetic_lineage_s","Current_Taxonomy_s","Candidate_species_s","RAG_1_s","PDC_s","ND2_s","Allozymes_s","locality_s","colour_pattern_i"]&key=REGNO_s',
             dataType:'jsonp',
             height:700,
             headerHeight:41,
@@ -258,6 +258,7 @@
             width: $('#tab-content').width(),
 //            layer: 'http://sandbox.ala.org.au/biocache-service/webportal/wms/reflect?q=data_resource_uid%3Adrt2783',
             layer:'http://sandbox.ala.org.au/biocache-service/webportal/wms/reflect?q=data_resource_uid:drt2811',
+            query:'data_resource_uid:drt2811',
 //            tableFieldName: 'lineage_ID_s',
             filterFieldName:'REGNO_s',
             onFilter:function(node){
