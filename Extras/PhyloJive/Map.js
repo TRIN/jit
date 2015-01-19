@@ -94,9 +94,7 @@ function Map(options) {
     var loadingControl = L.Control.loading({
         spinjs: true
     });
-    map.addControl(loadingControl);
 
-    map.addControl(new RecordLayerControl());
     var outlineCtrl = new L.Control.Checkbox({
         position:'bottomleft',
         text: 'Outline: ',
@@ -104,7 +102,7 @@ function Map(options) {
             that.updateEnv();
         }
     })
-    map.addControl(outlineCtrl);
+
     var opactiySlider = new L.Control.Slider({
         position:'bottomleft',
         text: 'Opacity:&nbsp;',
@@ -120,7 +118,7 @@ function Map(options) {
             tooltip: 'hide'
         }
     });
-    map.addControl(opactiySlider);
+
     var sizeSlider = new L.Control.Slider({
         text: 'Size:&nbsp;',
         position:'bottomleft',
@@ -135,9 +133,9 @@ function Map(options) {
             tooltip: 'hide'
         }
     });
-    map.addControl(sizeSlider);
 
     var colorBy = new L.Control.Select({
+        position: 'topright',
         onChange:function(val){
             env.colormode = val;
             legendCtrl.options.urlParams.cm = val;
@@ -146,12 +144,11 @@ function Map(options) {
         },
         url:options.facetUrl
     });
-    colorBy.addTo(map);
 
     var legendCtrl = new L.Control.Legend(options.legend);
     // initializing
     env.colormode = legendCtrl.options.urlParams.cm = colorBy.getValue();
-    map.addControl(legendCtrl);
+
     legendCtrl.update({});
 
     layer = L.tileLayer.wms(options.layer, {
@@ -161,9 +158,17 @@ function Map(options) {
         attribution: "PhyloJive",
         bgcolor: "0x000000"
     });
-    this.updateEnv();
-    layer.addTo(map);
 
+
+    // add all control and layer to map.
+    layer.addTo(map);
+    map.addControl(loadingControl);
+    map.addControl(new RecordLayerControl());
+    map.addControl(outlineCtrl);
+    map.addControl(opactiySlider);
+    map.addControl(sizeSlider);
+    colorBy.addTo(map);
+    map.addControl(legendCtrl);
 
     pj.on('click', function (node) {
         var children = pj.getChildrensName(node);
@@ -184,7 +189,9 @@ function Map(options) {
         that.updateEnv();
         map.addLayer(layer);
 //        legendCtrl.options.urlParams.q = options.query;
-//        legendCtrl.options.urlParams.fq = params;
-//        legendCtrl.update({});
+        legendCtrl.options.urlParams.fq = params;
+        legendCtrl.update({});
     });
+
+    this.updateEnv();
 }

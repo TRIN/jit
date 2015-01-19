@@ -13,7 +13,8 @@ L.Control.Legend = L.Control.extend({
         urlParams:{
             cm:undefined,
             q:undefined,
-            type:undefined
+            type:undefined,
+            fq:undefined
         },
         /**
          * callback when checkbox is clicked.
