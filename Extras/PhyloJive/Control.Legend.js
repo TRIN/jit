@@ -8,8 +8,8 @@ L.Control.Legend = L.Control.extend({
         url: undefined,
         dataType:'jsonp',
         proxy: true,
-        proxyUrl: 'http://115.146.93.110:8080/phylolink/ala/jsonp',
-        baseUrl:'http://sandbox.ala.org.au/ala-hub/occurrence/legend',
+        proxyUrl: undefined,
+        baseUrl:undefined,
         urlParams:{
             cm:undefined,
             q:undefined,
@@ -17,9 +17,24 @@ L.Control.Legend = L.Control.extend({
             fq:undefined
         },
         /**
+         * default value when no legend value is populated
+         */
+        defaultData: [{
+            red: 223,
+            green: 74,
+            blue: 33,
+            name: 'All records'
+        }],
+        icon: '<span class="glyphicon glyphicon-th-list">Legend</span>',
+        /**
          * callback when checkbox is clicked.
          */
         onClick: null,
+        /**
+         * creates url from all the given parameters.
+         * TODO: change architecture.
+         *
+         */
         createUrl:function(){
             var params =[];
             var up = this.options.urlParams;
@@ -46,13 +61,14 @@ L.Control.Legend = L.Control.extend({
     },
     viewmodel: function(){
       this.legends = ko.observableArray([]);
+      this.icon = ko.observable();
     },
     view : undefined,
     html: '<div>\
-                   <div class="legend-short btn btn-xs" style="margin: 5px;"><span class="glyphicon glyphicon-th-list"></span></div>\
+                   <div class="legend-short btn btn-xs" style="margin: 5px;" data-bind="html:icon"></div>\
                    <div class="legend-full leaflet-control-layers-overlays" style="margin:5px; display: none">\
                         <div class="pull-right close" style="padding-left:10px; border: 0;">&times;</div>\
-                        <label>Legend</label>\
+                        <!--<label>Legend</label>-->\
                         <div style="overflow:auto; max-height:400px; width: 120px;">\
                             <table class="legendTable"><tbody  data-bind="foreach: legends">\
                                 <tr><td><i class="legendColour" data-bind="attr:{style:style}"></i><span class="legendItemName" data-bind="text: name"></span></td></tr>\
@@ -101,6 +117,7 @@ L.Control.Legend = L.Control.extend({
     _createHTML: function (container) {
         container.innerHTML = this.html;
         this.view = new this.viewmodel();
+        this.view.icon(this.options.icon);
         ko.applyBindings(this.view,container);
     },
 

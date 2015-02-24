@@ -44,6 +44,11 @@ h1, h2, h3, h4, h5, h6 {
 /* added by temi, white background for canvas */
 canvas{
     background-color:#EEF2F7;
+}
+/**
+draw border on this div
+*/
+#info-canvaswidget{
     border: 2px;
     border-style: solid;
 }
@@ -138,7 +143,7 @@ canvas{
 }
 
 #navigationPanel {
-  padding-top:15px;
+  padding-top:1px;
   position:absolute;
   text-align: center;
   font-size: 13px;

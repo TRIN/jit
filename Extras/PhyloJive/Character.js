@@ -6,6 +6,7 @@ var Character = function (options) {
     new Emitter(this);
     var $ = jQuery;
     var that = this;
+
     options = $.extend({
         type: 'GET',
         dataType: 'json',
@@ -14,16 +15,53 @@ var Character = function (options) {
         delayedChartCall:[],
         chartWidth:400,
         chartHeight:200,
+        // flag to show upload character interface
+        edit: true,
         //flag to check if character has been loaded
-        characterloaded: false
+        characterloaded: false,
+        primaryClass: 'label label-primary',
+        defaultClass: 'label label-default',
+        /**
+         * sync flag
+         *
+         */
+        doSync: true,
+        /**
+         * address to sync to
+         */
+        syncUrl: 'http://localhost:8080/phylolink/phylo/saveHabitat',
+        syncType: 'POST',
+        syncData: {
+            id: 4
+        },
+        /**
+         * upload character params
+         */
+        upload: {
+            url: 'http://dev.ala.org.au:8080/phylolink/ala/saveAsList',
+            type: 'POST'
+        },
+        /**
+         * url to get the list of character datasets
+         */
+        charactersList : {
+            url: 'http://dev.ala.org.au:8080/phylolink/characters/list',
+            type: 'GET',
+            dataType: 'JOSN'
+        },
+        spinner: {
+            top: '50%',
+            left: '50%',
+            className: 'loader'
+        }
     }, options);
-
+    var spinner = new Spinner(options.spinner);
     var id = options.id;
     var inputId = id + 'autoComplete';
     var pj = options.pj;
-    var template = '\
+    var template3 = '\
     <div id="main">\
-        <div class="btn btn-xs btn-primary top-buffer" data-bind="click: addCharacter">Add Character</div>\
+        <div class="btn btn-xs btn-primary top-buffer" data-bind="click: addCharacter">Add Character to Tree</div>\
         <div class="container" data-bind="sortable: {data:characters, afterMove: $root.onMove}">\
             <div class="item top-buffer" title="You can drag or edit this item">\
                 <div data-bind="visible: !$root.isCharacterSelected($data), attr:{class: $root.characterClass($data)}">\
@@ -37,7 +75,7 @@ var Character = function (options) {
                 </div>\
             </div>\
         </div>\
-        <div data-bind="sortable: {data:characters}">\
+        <div data-bind="sortable: {data:characters, afterMove: $root.onMove}">\
             <div class="top-buffer panel panel-default">\
                 <div class="panel-heading" data-bind="text: name"></div>\
                 <div class="panel-body" >\
@@ -52,6 +90,90 @@ var Character = function (options) {
         To color the tree using a character either drag that character to the top of the list, or \
         edit the first character by clicking on that character.</p>\
     </div>';
+
+    var template2 = '\
+    <div id="main">\
+        <div class="btn btn-xs btn-primary top-buffer" data-bind="click: addCharacter">Add Character to Tree</div>\
+        <div data-bind="sortable: {data:characters, afterMove: $root.onMove}">\
+            <div class="item top-buffer" title="You can drag or edit this item">\
+                <div data-bind="visible: !$root.isCharacterSelected($data), attr:{class: $root.characterClass($data)}">\
+                    <i class="icon-white icon-resize-vertical" aria-hidden="true" style="cursor: move"></i>\
+                    <a style="color: #ffffff" href="#" data-bind="text: name, click: $root.selectedCharacter"></a>\
+                    <i class="icon-white icon-remove" data-bind="click: $root.removeCharacter" \
+                        style="cursor: pointer"></i>\
+                </div>\
+                <div data-bind="visibleAndSelect: $root.isCharacterSelected($data)">\
+                    <input data-bind="value: name, event: { blur: $root.clearCharacter }" />\
+                </div>\
+            </div>\
+        </div>\
+        <div data-bind="sortable: {data:characters, afterMove: $root.onMove}">\
+            <div class="top-buffer panel panel-default">\
+                <div class="panel-heading" data-bind="text: name"></div>\
+                <div class="panel-body" >\
+                    <div data-bind="attr:{id: id}, addChart: !$root.isCharacterSelected($data)" style="width: 100%; height: 200px;"></div>\
+                </div>\
+            </div>\
+        </div>\
+        <div class="bs-callout" style="position: relative">\
+        <h4>Pick from list:</h4>\
+        <form id="sourceToolbar" class="form-horizontal">\
+        <div class="control-group">\
+        <label class="control-label" for="">List of characters available:</label>\
+        <div class="controls">\
+            <select id="sourceChar" data-bind="options:lists,optionsText:\'title\',value:list,optionsCaption:\'Choose..\', event:{change:loadNewCharacters}" required></select>\
+            </div>\
+        </div>\
+        </form>\
+    </div>\
+    </div>\
+    <div >\
+        <div class="bs-callout" id="uploadCharacters" style="position: relative>\
+        <h4>Or, upload your character data</h4>\
+        <form id="csvForm" class="form-horizontal" enctype="multipart/form-data">\
+        <div class="control-group">\
+        <label class="control-label">Choose a CSV file*:</label>\
+        <div class="controls">\
+        <input id="csvFile" type="file" name="file" value="Upload" accept=".csv" required/>\
+        </div>\
+        </div>\
+    <div class="control-group">\
+        <label class="control-label" for="inputPassword">Title*:</label>\
+        <div class="controls">\
+            <input type="text" id="title" data-bind="value: title" placeholder="My acacia characters" required>\
+            </div>\
+        </div>\
+    <div class="control-group">\
+        <label class="control-label" for="inputPassword">Column with scientific name*:</label>\
+        <div class="controls">\
+            <select data-bind="options:headers,optionsText:\'displayname\',value:selectedValue,optionsCaption:\'Choose..\'" required></select>\
+            </div>\
+        </div>\
+          <div class="control-group">\
+          <div class="controls">\
+        <button id="uploadBtn" class="btn btn-small btn-primary">Upload</button>\
+        </div>\
+        </div>\
+        </form></div>\
+    </div>\
+    <div class="bs-callout bs-callout-info">\
+        <h4>Note</h4><p>You can select characters using <i>Add Character</i>\
+        button. Tree branch color is determined by the first character on the list.\
+        To color the tree using a character either drag that character to the top of the list, or \
+        edit the first character by clicking on that character.</p>\
+    </div>';
+
+    var template = options.bootstrap == 2? template2:template3;
+    //check bootstrap version
+    switch (options.bootstrap){
+        case 2:
+            options.primaryClass = 'label label-info';
+            options.defaultClass = 'label';
+            break;
+        case 3:
+            //  use default value
+            break;
+    }
 
     //adding template to html page
     $('#' + id).html(template);
@@ -86,11 +208,14 @@ var Character = function (options) {
          * serial number of the next character
          * @type {number}
          */
-        var count = 1;
+//        var count = 1;
         self.newChar = false;
         self.characters = ko.observableArray([]);
-
+        self.count = ko.observable(1);
         self.selectedCharacter = ko.observable();
+        self.lists = ko.observableArray([]);
+        self.list = ko.observable();
+
         self.clearCharacter = function (data, event) {
             if (data === self.selectedCharacter()) {
                 self.selectedCharacter(null);
@@ -99,14 +224,14 @@ var Character = function (options) {
             if (data.name() == "") {
                 self.characters.remove(data);
                 self.emit('removed')
-                self.emit('statechange', self.list());
+                self.emit('statechange', self.charlist());
             }
         };
 
         self.removeCharacter = function (data, event) {
             self.characters.remove(data);
             self.emit('removed');
-            self.emit('statechange', self.list());
+            self.emit('statechange', self.charlist());
         };
 
         self.addCharacter = function (name) {
@@ -114,8 +239,8 @@ var Character = function (options) {
                 name = "";
             }
 
-            var opt = {name: name, id: 'charChart-' + count}
-            count++;
+            var opt = {name: name, id: 'charChart-' + self.count()}
+            self.count(self.count()+1);
             var character = new Character(opt);
             self.selectedCharacter(character);
             self.characters.push(character);
@@ -123,11 +248,11 @@ var Character = function (options) {
             return character;
         };
 
-        self.addNamedCharacter = function (name) {
-            var character = self.addCharacter(name);
+        self.addNamedCharacter = function (char) {
+            var character = self.addCharacter(char);
             // to hide input tag and to bring label visible.
             self.clearCharacter(character,null)
-            name && self.emit('statechange', self.list());
+            char && self.emit('statechange', self.charlist(),true);
         };
 
         self.isCharacterSelected = function (character) {
@@ -136,10 +261,10 @@ var Character = function (options) {
 
         self.onMove = function () {
             self.emit('moved');
-            self.emit('statechange', self.list());
+            self.emit('statechange', self.charlist());
         };
 
-        self.list = function () {
+        self.charlist = function () {
             var selected = [], i, char = self.characters();
             for (i = 0; i < char.length; i++) {
                 selected.push(char[i].name())
@@ -154,9 +279,9 @@ var Character = function (options) {
 
         self.characterClass = function (data) {
             if (self.isPrimary(data)) {
-                return 'label label-primary';
+                return options.primaryClass;
             } else {
-                return 'label label-default';
+                return options.defaultClass;
             }
         }
 
@@ -168,7 +293,7 @@ var Character = function (options) {
             char.name(name);
             self.newChar && self.emit('newchar', char.id(), char.name());
             self.newChar = false;
-            self.emit('statechange', self.list());
+            self.emit('statechange', self.charlist());
         }
 
         self.updateChart = function(char,list){
@@ -192,6 +317,19 @@ var Character = function (options) {
                 data = that.chartDataTransform(temp);
                 that.columnchart(id, data)
             }
+        }
+
+        self.loadNewCharacters= function(){
+            if(self.list()){
+                self.characters.removeAll()
+                that.loadCharacterFromUrl(self.list().url);
+            }
+        }
+
+        self.addNewSource = function(list){
+            self.lists.push(list);
+            self.list(list)
+            $("#sourceChar").trigger('change');
         }
     };
 
@@ -219,6 +357,8 @@ var Character = function (options) {
             if (valueAccessor()) {
                 // focus on input tag once clicked to edit
                 $(element).find("input").focus().select();
+            } else {
+                $(element).find("input").blur();
             }
         }
     };
@@ -226,8 +366,15 @@ var Character = function (options) {
     ko.bindingHandlers.addChart = {
         update: function (el, valueAccessor, innerFn, data, koObj) {
             if (valueAccessor()) {
-                var id = data.id(), charName = data.name();
-                var temp = that.getCharArray(charName)
+                var id = data.id(), charName = data.name(), charJson,
+                    node = pj.getSelection(),
+                    list;
+                if(node){
+                    list = pj.getChildrensName(node);
+                    charJson = that.charJsonSubset(list);
+                }
+
+                var temp = that.getCharArray(charName,charJson)
                 if(temp == undefined || temp.length == 0){
                     return;
                 }
@@ -245,7 +392,16 @@ var Character = function (options) {
     };
 
     var view = new CharacterViewModel();
-    ko.applyBindings(view);
+    ko.applyBindings(view, document.getElementById('main'));
+
+    var UploadViewModel = function(){
+        this.headers = ko.observableArray();
+        this.selectedValue = ko.observable();
+        this.title = ko.observable();
+    }
+
+    var upload = new UploadViewModel();
+    ko.applyBindings(upload, document.getElementById('uploadCharacters'));
 
     /**
      * transform data to be able to be displayed by chart. i.e. convert qualitative character to term frequency
@@ -439,10 +595,11 @@ var Character = function (options) {
     this.initCharacters = function(){
         var char;
         // make sure tree and character data are loaded.
-        if(options.initCharacters.length && pj.isTreeLoaded() && that.isCharacterLoaded()){
-            while( char = options.initCharacters.shift()) {
-                view.addNamedCharacter(char);
+        if(options.initCharacters.characters && pj.isTreeLoaded() && that.isCharacterLoaded()){
+            while( char = options.initCharacters.characters.shift()) {
+                view.addNamedCharacter(char.name);
             }
+
         }
     }
 
@@ -460,11 +617,136 @@ var Character = function (options) {
         return options.characterloaded;
     }
 
+    this.save = function () {
+        if (!options.doSync) {
+            return;
+        }
+
+        var data = ko.toJSON(view);
+        var sync = $.extend({}, options.syncData);
+        sync.json = data;
+        $.ajax({
+            url: options.syncUrl,
+            type: options.syncType,
+            data: sync,
+            success: function (data) {
+                console.log('saved!');
+            },
+            error: function () {
+                //TODO: popup error?
+                console.log('error saving!');
+            }
+        });
+    }
+
+    this.readFile = function(file, callback){
+        if(!file){
+            return;
+        }
+        var f = new FileReader(),that = this;
+        f.onload = function(){
+            callback.apply(that, [f.result]);
+        }
+        f.readAsText(file);
+    }
+
+    /**
+     * show header values
+     * @param text
+     */
+    this.showHeaders = function(text){
+        var headers, i;
+        headers = this.getHeaders( text );
+        upload.headers.removeAll();
+        for(i=0;i<headers.length;i++){
+            upload.headers.push(headers[i]);
+        }
+    }
+
+    /**
+     * pass a csv file content and get the headers.
+     * @param text
+     * @returns {Array}
+     */
+    this.getHeaders = function(text){
+        var lines = text.split(/[\r\n]/g), firstLine = lines[0];
+        var headers = [], columns = firstLine.split(',');
+        if(columns){
+            for(i=0;i<columns.length;i++){
+                headers.push({
+                    id: i,
+                    displayname : columns[i]
+                })
+            }
+        }
+        return headers;
+    }
+
+    this.uploadCharacter= function(){
+        var spinner = new Spinner(options.spinner);
+        var param = {
+            title: upload.title(),
+            column: upload.selectedValue()
+        };
+        var data = new FormData(document.getElementById('csvForm'));
+        data.append("formParms",JSON.stringify(param));
+
+        spinner.spin();
+        $('#uploadCharacters').append(spinner.el);
+        $.ajax({
+            url: options.upload.url,
+            type: options.upload.type,
+            data: data,
+            processData: false,
+            contentType: false,
+            success: function(data){
+                spinner.stop();
+                view.addNewSource(data)
+            },
+            error: function(){
+                spinner.stop();
+                console.log('failed!')
+            }
+        })
+    }
+
+    this.loadCharacterFromUrl = function(url, select){
+        var spinner = new Spinner(options.spinner);
+        spinner.spin();
+        $('#sourceToolbar').append(spinner.el)
+        $.ajax({
+            url: url,
+            success: function (data) {
+                spinner.stop();
+                that.setCharJson(data);
+                select && view.list(select);
+            },
+            error: function(){
+                spinner.stop();
+            }
+        })
+    }
+
+    this.startSpinner = function(){
+        if(!spinner.el){
+            spinner = new  Spinner(options.spinner);
+        }
+
+        spinner.spin();
+        $('#'+id).append(spinner.el)
+    }
+
+    this.stopSpinner = function(){
+        spinner.stop();
+    }
+
     options.characterloaded = false;
     /**
      * load character from url or from provided list.
      */
-    if (options.url) {
+    if(options.initCharacters.list){
+        view.addNewSource(options.initCharacters.list);
+    }else if (options.url) {
         $.ajax({
             url: options.url,
             type: options.type,
@@ -475,6 +757,21 @@ var Character = function (options) {
         })
     } else if (options.character) {
         this.setCharJson(options.character)
+    }
+
+    // load characters list
+    if( options.edit && options.charactersList.url ){
+        $.ajax({
+            url: options.charactersList.url,
+            success: function(data){
+                var i;
+                for(i = 0; i<data.length; i++){
+                    if(options.initCharacters && options.initCharacters.list && (data[i].id != options.initCharacters.list.id)){
+                        view.lists.push(data[i]);
+                    }
+                }
+            }
+        })
     }
 
     //set style
@@ -506,4 +803,26 @@ var Character = function (options) {
     pj.on('click', this.updateCharts);
     this.on('setcharacters',this.initCharacters)
     pj.on('treeloaded', this.initCharacters);
+
+    // sync handler
+    this.on('sync', this.save);
+    view.on('statechange', function (list, init) {
+        // do not save when initializing the charts. changed event is fired there too.
+        !init && that.emit('sync');
+    });
+
+    if(options.edit){
+        $("#csvFile").on('change', function(event){
+            var file = event.target.files[0];
+            that.readFile(file, that.showHeaders);
+        });
+
+        $("#uploadBtn").on('click', function(){
+            that.uploadCharacter();
+            return false;
+        });
+    } else {
+        $("#uploadCharacters").hide();
+        $("#sourceToolbar").hide();
+    }
 };

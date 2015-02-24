@@ -32,7 +32,10 @@ L.Control.Slider = L.Control.extend({
      * checkbox dom element
      */
     _checkbox:null,
-
+    /**
+     * a flag to test for integer value.
+     */
+    integer: null,
     initialize: function ( options) {
         L.setOptions(this, options);
     },
@@ -51,7 +54,13 @@ L.Control.Slider = L.Control.extend({
     onRemove: function (map) {
 
     },
-
+    isInt: function(a){
+        if((parseFloat(a) === parseInt(a)) && !isNaN(a)){
+            return true;
+        } else {
+            return false;
+        }
+    },
     _createButton: function (html, title, className, container, fn) {
         var that = this;
         var cont = L.DomUtil.create('div','', container);
@@ -68,11 +77,23 @@ L.Control.Slider = L.Control.extend({
         div.style['width'] = this.options.sliderLength;
 
         $(div).slider(this.options.sliderOpt).on('slideStop', function(ev){
-            var value = parseFloat(ev.value).toFixed(1); // prevent values like 0.30000000004 appearing
+            var value;
+            if(that.integer){
+                value = parseInt(ev.value);
+            } else {
+                // prevent values like 0.30000000004 appearing
+                value = parseFloat(ev.value).toFixed(1);
+            }
             label.innerHTML = that.options.text + ' ' + value+'&nbsp&nbsp&nbsp';
             that.onChange(value);
         });
-
+        //set integer flag
+        var opt = this.options.sliderOpt;
+        if(this.isInt(opt.min)&& this.isInt(opt.max) && this.isInt(opt.step)){
+            this.integer = true;
+        } else {
+            this.integer = false;
+        }
         this._slider = $(div);
 
         L.DomEvent

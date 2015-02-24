@@ -8,6 +8,7 @@ function Map(options) {
     var $ = jQuery;
     var that = this;
     var i;
+    var $ = jQuery;
     options = $.extend({
         type: 'GET',
         dataType: 'json',
@@ -16,34 +17,37 @@ function Map(options) {
         //flag to check if character has been loaded
         characterloaded: false,
         env: {
-            'colormode': 'lineage_ID_s',
+            'colormode': undefined,
             'name': 'circle',
             'size': 4,
-            'opacity': 0.8//,
-//            'color': 'df4a21'
+            'opacity': 0.8,
+            'color': 'df4a21'
         }
     }, options);
 
     var env = options.env;
     var id = options.id;
     var pj = options.pj;
+    var filter = options.filter;
+
     $('#' + id).height(options.height);
     $('#' + id).width(options.width);
-    var query = options.query;
+    var query = filter.getQuery();
     this.invalidateSize = function () {
         map.invalidateSize(false);
     };
     this.getEnv = function () {
         var str = []
+        env['colormode'] = colorBy.getValue();
         for (var i in env) {
-            if (env[i]) {
+            if (env[i] && !( (i == 'color') && env['colormode']) ) {
                 str.push(i + ':' + env[i]);
             }
         }
         return str.join(';');
     };
     this.updateEnv = function () {
-        layer.setParams({
+        layer && layer.setParams({
             'ENV': this.getEnv(),
             'opacity': env.opacity,
             'outline': outlineCtrl.getValue(),
@@ -129,6 +133,7 @@ function Map(options) {
         sliderOpt: {
             min: 1,
             max: 9,
+            step: 1,
             value: env.size,
             tooltip: 'hide'
         }
@@ -136,32 +141,20 @@ function Map(options) {
 
     var colorBy = new L.Control.Select({
         position: 'topright',
-        onChange:function(val){
-            env.colormode = val;
-            legendCtrl.options.urlParams.cm = val;
-            legendCtrl.update({})
-            that.updateEnv();
-        },
         url:options.facetUrl
     });
-
+    colorBy.on('change', function(val){
+        env.colormode = val;
+//        legendCtrl.options.urlParams.cm = val;
+        that.updateLegend();
+        that.updateEnv();
+    });
     var legendCtrl = new L.Control.Legend(options.legend);
     // initializing
     env.colormode = legendCtrl.options.urlParams.cm = colorBy.getValue();
 
     legendCtrl.update({});
 
-    layer = L.tileLayer.wms(options.layer, {
-//        layers: 'Ala occurrence',
-        format: 'image/png',
-        transparent: true,
-        attribution: "PhyloJive",
-        bgcolor: "0x000000"
-    });
-
-
-    // add all control and layer to map.
-    layer.addTo(map);
     map.addControl(loadingControl);
     map.addControl(new RecordLayerControl());
     map.addControl(outlineCtrl);
@@ -170,28 +163,126 @@ function Map(options) {
     colorBy.addTo(map);
     map.addControl(legendCtrl);
 
-    pj.on('click', function (node) {
-        var children = pj.getChildrensName(node);
-        var params;
-        for (i in children) {
-            children[i] = options.filterFieldName + ':"' + children[i] + '"';
+    pj.on('click', function (node,list,ajax) {
+        var update = function(){
+            // color mode reset
+            colorBy.updateData([]);
+
+            // color mode reload
+//        colorBy.updateUrl(filter.format(colorBy.url));
+            that.updateColorBy();
+
+            // set env variable
+            // set legend variables
+            // reload legend
+            that.updateLegend();
+
+            // update map
+            that.updateMap();
         }
-        params = children.join('+OR+').replace(/ /g, '+');
-        query = options.query;
-        layer && map.removeLayer(layer);
-        layer = L.tileLayer.wms(options.layer + '&fq=' + params, {
-//            layers: 'Ala occurrence',
-            format: 'image/png',
-            transparent: true,
-            attribution: "PhyloJive",
-            bgcolor: "0x000000"
-        });
-        that.updateEnv();
-        map.addLayer(layer);
-//        legendCtrl.options.urlParams.q = options.query;
-        legendCtrl.options.urlParams.fq = params;
-        legendCtrl.update({});
+
+        if(ajax){
+            ajax.then(update,function(){
+                console.log('failed to save query')
+            })
+        } else {
+            update();
+        }
     });
 
-    this.updateEnv();
+    this.updateColorBy = function( f ){
+        f = f || filter;
+        var url = options.colorBy.url;
+        var that = this;
+        var qid = pj.getQid(true), data;
+        if(qid){
+            data = {
+                q:qid,
+                source: options.source
+            }
+        } else {
+            data = {
+                q: f.formatQuery(),
+                fq: f.formatFq(),
+                source: options.source
+            }
+        }
+        $.ajax({
+            url: url,
+            dataType:options.colorBy.dataType,
+            data:data,
+            success: function( data ){
+                data = data || [];
+                colorBy.updateData( data );
+            },
+            error: function(){
+                console.log('error communicating with colorby service.');
+            }
+        });
+    };
+
+    this.updateLegend = function(f){
+        f = f || filter;
+        var that = this;
+        var params =[];
+        var data = options.legend.urlParams;
+        data.cm = colorBy.getValue() || '';
+//        data.q = f.getQuery();
+        data.q = pj.getQid(true);
+//        var url = f.format(options.legend.baseUrl)
+        var url = options.legend.baseUrl
+        if( data.cm ){
+            if(options.legend.proxy){
+                data.cm && params.push('cm='+data.cm);
+                data.type && params.push('type='+data.type);
+                data.q && params.push('q='+data.q);
+                if(url.split(/\?/g).length > 1){
+                    url = url + '&' + params.join('&');
+                } else {
+                    url = url + '?' + params.join('&');
+                }
+                data = {};
+                url =  options.legend.proxyUrl + '?url='+encodeURIComponent(url);
+            }
+
+            $.ajax({
+                url: url,
+                data:data,
+                dataType:options.legend.dataType,
+                success:function(data){
+                    legendCtrl.legend(data);
+                }
+            });
+        } else {
+            legendCtrl.legend(legendCtrl.options.defaultData);
+        }
+    };
+
+    this.updateMap = function(f){
+        var qid = pj.getQid(true);
+        var query = filter.format(options.layer)
+        if(qid){
+            query = options.layer + '?q=' + qid
+        }
+        f = f || filter;
+        // only if query exist add layer. otherwise, the whole atlas data gets added.
+        if( f.getQuery() || f.getFq() ||  (options.source != 'ala')){
+            layer && map.removeLayer(layer);
+            console.log(query);
+            layer = L.tileLayer.wms(query, {
+//            layers: 'Ala occurrence',
+                format: 'image/png',
+                transparent: true,
+                attribution: "PhyloJive",
+                bgcolor: "0x000000"
+            });
+            that.updateEnv();
+            map.addLayer(layer);
+        }
+    };
+
+//    this.updateEnv();
+    that.updateMap();
+    this.updateColorBy();
+    this.updateLegend();
 }

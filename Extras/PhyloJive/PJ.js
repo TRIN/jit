@@ -69,6 +69,7 @@ var PJ = function (params) {
     console.log('in pj');
     var self = new Emitter(this);
     var pj = this;
+    var qid, prevSearch;
     //adding support functions for event handling
     this.events = [
     /**
@@ -85,6 +86,11 @@ var PJ = function (params) {
         'treeloaded'
     ]
     var $ = jQuery;
+    var spinner = new Spinner({
+        top: '50%',
+        left: '50%',
+        className: 'loader'
+    });
 
     // used by search
     var result = []
@@ -110,6 +116,19 @@ var PJ = function (params) {
         levelsToShow: Number.MAX_VALUE,
         constrained: false,
         firstCharacter: 'Raceme_length_median',
+        /**
+         * save query flags
+         */
+        doSaveQuery: true,
+        saveQuery:{
+            url: 'http://dev.ala.org.au:8080/phylolink/ala/saveQuery',
+            type: 'POST',
+            dataType: 'JSON'
+        },
+        /**
+         * flag to see if hash is changing due to click by user or going back on browser history
+         */
+        setNodeToUrlFlag: false,
         //enable panning
         Navigation: {
             enable: true,
@@ -157,7 +176,7 @@ var PJ = function (params) {
             },
 
             onClick: function (node, eventInfo, e) {
-                var leafs;
+                var leafs,names,queryObj;
                 //console.log("debug",node, eventInfo, e);
                 if (false && node) {
                     selectedClade = [];
@@ -232,15 +251,40 @@ var PJ = function (params) {
 //                    jQuery("#infovis-canvas").data("node", node);
 //                    jQuery("#infovis-canvas").data("info", html);
 //                    jQuery("#infovis-canvas").contextMenu({x: e.pageX, y: e.pageY});
+
                     st.clickedNode = node;
-                    redraw()
+//                    redraw()
                     st.plot()
+                    console.log(node);
+                    pj.setNodeToUrl(node.id);
+                    names = pj.getChildrensName(node);
+                    queryObj = config.onBeforeClick(node, names);
+                    node && self.emit('click', node, names, queryObj);
                 }
-                console.log(node)
-                node && self.emit('click', node)
             }
         },
 
+        onBeforeClick: function(node, names){
+            if(config.doSaveQuery){
+                qid = undefined;
+                var obj = $.ajax({
+                    url: config.saveQuery.url,
+                    type: config.saveQuery.type,
+                    dataType: config.saveQuery.dataType,
+                    data:{
+                        speciesList: JSON.stringify(names)
+                    },
+                    success: function(q){
+                        qid = q.qid;
+                        console.log(qid);
+                    },
+                    error: function(){
+                        console.log('failed!')
+                    }
+                });
+                return obj;
+            }
+        },
         presentClade: function (clade) {
             var tmpl = st.config.tmpl,
                 nodeList = [],
@@ -580,7 +624,31 @@ var PJ = function (params) {
 
         opt.codeBase = opt.codeBase || '';
 //        var popupHTML = '<div id="popup-close" style="position:relative; width:100%; background-color:lightblue"><a href="#" onclick="this.parentNode.parentNode.style.display=\'none\';" onmouseover="this.style.cursor=\'pointer\';" class="ui-dialog-titlebar-close ui-corner-all" role="button"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="popup-text"></div>';
-        var navHTML = '<div style="position:relative"><div id="panup" style="position: absolute; left: 13px; top: 4px;' +
+        var navHTML2 = '<div style="position:relative">' +
+            '<div style="position: absolute; left: -153px; top: 5px; width:50px; height: 20px; cursor: pointer;">'+
+            '<div class="input-append">'+
+            '<input style="width:150px;" id="searchText" type="text" placeholder="Search tree">'+
+            '<button class="btn btn-primary" type="button" id="searchBtn"><i class="icon icon-white icon-search"></i> </button>'+
+            '</div></div>'+
+            '<div id="panup" style="position: absolute; left: 13px; top: 42px;' +
+            ' width: 18px; height: 18px; cursor: pointer;"><div id="north"><i class="icon-arrow-up"' +
+            ' aria-hidden="true"></i></div></div><div id="panleft" style="position: absolute; left: 4px; top: 56px;' +
+            ' width: 18px; height: 18px; cursor: pointer;"><div id="west"><i class="icon-arrow-left"' +
+            ' aria-hidden="true"></i></div></div><div id="panright" style="position: absolute; left: 22px; ' +
+            'top: 56px; width: 18px; height: 18px; cursor: pointer;"><div id="east"><i class=" ' +
+            'icon-arrow-right" aria-hidden="true"></i></div></div><div id="pandown" style="position: ' +
+            'absolute; left: 13px; top: 70px; width: 18px; height: 18px; cursor: pointer;"><div id="south"><i ' +
+            'class="icon-arrow-down" aria-hidden="true"></i></div></div>' +
+            '<div id="zoomout" style="position: absolute; left: 13px; top: 129px; width: 18px; height: 18px; ' +
+            'cursor: pointer;"><div id="zoomOUT"><i class="icon-zoom-out"></i></div></div>' +
+            '<div id="zoomworld" style="position: absolute; left: 13px; top: 93px; width: 18px; height: 18px; cursor: pointer;"><div id="world" style="position: relative; width: 18px; height: ' +
+            '18px;" ><i class="icon-resize-small"></i></div></div>' +
+            '<div id="zoomin" style="position: absolute; left: 13px; top: 111px; width: 18px; height: 18px; cursor: ' +
+            'pointer;">' +
+            '<div id="zoomIN"><i class="icon-zoom-in"></i></div></div>' +
+            '</div>';
+
+        var navHTML3 =  '<div style="position:relative"><div id="panup" style="position: absolute; left: 13px; top: 4px;' +
             ' width: 18px; height: 18px; cursor: pointer;"><div id="north"><span class="glyphicon glyphicon-arrow-up"' +
             ' aria-hidden="true"></span></div></div><div id="panleft" style="position: absolute; left: 4px; top: 22px;' +
             ' width: 18px; height: 18px; cursor: pointer;"><div id="west"><span class="glyphicon glyphicon-arrow-left"' +
@@ -596,9 +664,9 @@ var PJ = function (params) {
             '<div id="zoomin" style="position: absolute; left: 13px; top: 81px; width: 18px; height: 18px; cursor: ' +
             'pointer;">' +
             '<div id="zoomIN"><span class="glyphicon glyphicon-zoom-in"></span></div></div>' +
-            '<div style="position: absolute; left: 13px; top: 63px; width: 18px; height: 18px; cursor: pointer;position:absolute;left:-50px;top:123px;' +
-            'width:130px"> Status: <span id="log"></span></div></div>';
+            '</div>';
 
+        var navHTML = config.bootstrap == 2? navHTML2: navHTML3;
         var jitcontainer, rightJitContainer, centerJitContainer,
             id = typeof (opt.injectInto) == 'string' ? opt.injectInto : opt.injectInto.id,
             infovis, parent, popup, navigation, menu, border;
@@ -739,6 +807,17 @@ var PJ = function (params) {
         world.onclick = function () {
             st.fitScreen();
         };
+
+        var searchBox = $("#searchBtn");
+        searchBox.click(function(){
+            var str = $('#searchText').val();
+            pj.search(str, 1);
+        })
+        var searchText = $('#searchText').keypress( function(e){
+            if(e.which == 13) {
+                searchBox.trigger('click');
+            }
+        });
     };
 
     /**
@@ -752,10 +831,14 @@ var PJ = function (params) {
         var method = options.method || 'GET'
         console.log(options)
 
+        spinner.spin();
+        $('#'+config.injectInto).append(spinner.el);
+
         $.ajax({
             url: url,
             dataType: options.dataType,
             success: function (data) {
+                spinner.stop();
                 if (typeof data == 'object') {
                     options.format = data.format || options.format;
                     options.tree = data.tree;
@@ -763,7 +846,10 @@ var PJ = function (params) {
                     options.tree = data;
                 }
                 callback.apply(that, [options])
-                console.log(that)
+            },
+            error: function(){
+                spinner.stop();
+                alert('Could not load tree. Tree URL seems to be incorrect.');
             }
         })
     }
@@ -776,7 +862,7 @@ var PJ = function (params) {
      * url - url to the tree data
      */
     var setTree = function (obj) {
-        var dataObject, json, d;
+        var dataObject, json, d, id, node;
         config.treeloaded = false;
         switch (obj.format) {
             case 'newick':
@@ -803,8 +889,16 @@ var PJ = function (params) {
             json = smitsNode2JSON(dataObject.getRoot());
             st.loadJSON(json)
             st.compute();
+            id = pj.getNodeFromUrl();
             st.onClick(st.root);
+
+            // if zoomIndex is not set, the rendering will go crazy. make sure zoomIndex is set when a node is clicked
+            st.zoomIndex = st.graph.depth.length;
             st.plot();
+            if(id!== undefined){
+                pj.clickNode(id);
+            }
+
             config.treeloaded = true;
             // fire event after tree is loaded
             pj.emit('treeloaded');
@@ -940,13 +1034,17 @@ var PJ = function (params) {
             // transalate to top
             var canvas = st.canvas,
                 oy = canvas.translateOffsetY,
-                xTranslate = 0,
+                ox = canvas.translateOffsetX,
+                xTranslate = -ox,
                 yTranslate = -oy;
             st.canvas.translate(xTranslate, yTranslate);
 
             var element = st.labels.getLabel(result[pos].id);
             element.style.backgroundColor = 'yellow';
-            jQuery(element).click();
+            yTranslate = $(element).css('top').replace('px');
+            yTranslate = yTranslate?Number.parseInt(yTranslate):0;
+            st.canvas.translate(0, -yTranslate);
+//            jQuery(element).click();
         }
     };
 
@@ -961,7 +1059,7 @@ var PJ = function (params) {
 
     this.getChildrensName = function(node){
         var result = []
-        node.eachSubgraph(function (n) {
+        node && node.eachSubgraph(function (n) {
             if (n.data.leaf) {
                 result.push(n.name);
             }
@@ -973,6 +1071,10 @@ var PJ = function (params) {
         return st.clickedNode;
     }
 
+    this.getRoot = function(){
+        return st.root;
+    }
+
     /**
      * check if tree is loaded
      * @returns {boolean}
@@ -980,4 +1082,83 @@ var PJ = function (params) {
     this.isTreeLoaded = function(){
         return config.treeloaded;
     }
+
+    /**
+     * get query id. The returned value can be formatted using the format parameter.
+     * @param format (Boolean) format query id in ala format
+     * @returns (string) eg: 'qid:1234887' or '1234887'
+     */
+    this.getQid=function(format){
+        if(qid === undefined){
+            return;
+        }
+
+        if(format){
+            return 'qid:'+qid;
+        } else {
+            return qid;
+        }
+    }
+
+    /**
+     * gets node id from url hash
+     */
+    this.getNodeFromUrl = function(){
+        var hash = window.location.hash;
+        var nodeId = hash.split("#node/");
+        if(nodeId.length > 1){
+            return Number.parseInt(nodeId[1]);
+        }
+    }
+
+    /**
+     * set a node id to url
+     * @param id - node id
+     */
+    this.setNodeToUrl = function(id){
+        if(id == undefined){
+            return;
+        }
+        config.setNodeToUrlFlag = true;
+        var hash = '#node/' + id
+        window.location.hash = hash;
+    }
+
+    /**
+     * simulate a click on a node
+     * @param node
+     */
+    this.clickNode = function(id){
+        var node = st.graph.getNode(id);
+        var pos = node.getPos(),
+            p = st.canvas.getPos(),
+            offx = st.canvas.translateOffsetX,
+            offy = st.canvas.translateOffsetY,
+            x,y;
+        if( !node.data.leaf){
+            x = p.x + offx + pos.x+5;
+            y = p.y + offy + pos.y+3;
+            console.log(x+":"+y);
+            var evt = document.createEvent('MouseEvent');
+            evt.initMouseEvent("mousedown", true, true, window,
+                0, 0, 0, x, y, false, false, false, false, 0, null);
+            st.canvas.canvases[0].canvas.dispatchEvent(evt);
+
+            evt = document.createEvent('MouseEvent');
+            evt.initMouseEvent("mouseup", true, true, window,
+                0, 0, 0, x, y, false, false, false, false, 0, null);
+            st.canvas.canvases[0].canvas.dispatchEvent(evt);
+        } else {
+            $('#'+node.id).click();
+        }
+        st.plot()
+    }
+
+
+    $(window).on('hashchange',function(){
+        if(!config.setNodeToUrlFlag){
+            pj.clickNode(pj.getNodeFromUrl())
+        }
+        config.setNodeToUrlFlag = false;
+    })
 };

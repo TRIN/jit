@@ -7,8 +7,11 @@ L.Control.Select = L.Control.extend({
         position: 'bottomleft',
         title:'click me',
         text:'Color by: ',
-        initialValue:[{"name":"REGNO_s","displayName":"REGNO"},{"name":"Body_length_i","displayName":"Body length"},{"name":"Genetic_lineage_s","displayName":"Genetic lineage"}],
-        url:'http://115.146.93.110:8080/phylolink/ala/facets?drid=drt2811',
+        /**
+         * format: [{"name":"REGNO_s","displayName":"REGNO"}]
+         */
+        initialValue:[],
+        url:undefined,
         dataType:'jsonp',
         style:{
             height:'30px',
@@ -38,6 +41,7 @@ L.Control.Select = L.Control.extend({
     viewModel: undefined,
     initialize: function ( options) {
         L.setOptions(this, options);
+        new Emitter(this);
     },
 
     onAdd: function (map) {
@@ -74,19 +78,23 @@ L.Control.Select = L.Control.extend({
         ko.applyBindings(this.viewModel,container);
 
         $(container).find('select').on('change',function(){
-            that.options && that.options.onChange(that.getValue());
+//            that.options && that.options.onChange(that.getValue());
+            that.emit('change', that.getValue());
         });
     },
     updateData:function(data){
+        this.viewModel.facets.removeAll();
         for(var i in data){
             this.viewModel.facets.push(new this.Model(data[i]))
         }
-        this.options.onChange(this.getValue());
+//        this.options.onChange(this.getValue());
     },
-    updateUrl:function(){
+    updateUrl:function(url){
         var that = this;
+        url = url || this.options.url;
+        this.viewModel.facets.removeAll();
         $.ajax({
-            url:this.options.url,
+            url:url,
             dataType:this.options.dataType,
             success:function(data){
                 that.updateData(data);
